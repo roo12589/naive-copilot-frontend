@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import path from 'path'
 import vueSetupExtend from 'vite-plugin-vue-setup-extend'
 // import { visualizer } from 'rollup-plugin-visualizer'
@@ -15,6 +16,7 @@ export default defineConfig(({ command, mode }) => {
     const config: UserConfig = {
         plugins: [
             vue(),
+            vueJsx(),
             vueSetupExtend(),
             /**
              * * 组件库按需引入插件
@@ -23,9 +25,8 @@ export default defineConfig(({ command, mode }) => {
             Components({
                 resolvers: [NaiveUiResolver()],
             }),
-
         ],
-        base:  '/',
+        base: '/',
         define: {
             'process.env': {},
         },
