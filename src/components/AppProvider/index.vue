@@ -1,5 +1,5 @@
 <template>
-    <n-config-provider :theme="theme" :theme-overrides="themeOverrides">
+    <n-config-provider :theme="theme" :locale="zhCN"  :date-locale="dateZhCN" :theme-overrides="themeOverrides">
         <n-loading-bar-provider>
             <n-dialog-provider>
                 <n-notification-provider>
@@ -16,13 +16,14 @@
 
 <script lang="ts" setup>
 import { defineComponent, h } from 'vue'
-import { createDiscreteApi } from 'naive-ui'
+import { createDiscreteApi,zhCN,dateZhCN } from 'naive-ui'
 import { themeOverrides } from './themeVariables'
 // import { NThemeEditor } from 'naive-ui'
 
 defineProps<{
     theme: any
 }>()
+
 
 // 挂载naive组件的方法至window, 以便在全局使用
 function setupNaiveTools() {

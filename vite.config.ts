@@ -38,7 +38,7 @@ export default defineConfig(({ command, mode }) => {
         css: {
             preprocessorOptions: {
                 scss: {
-                    additionalData: `@import '@/styles/variables.scss';`,
+                    additionalData: `@import '@/styles/index.scss';`,
                 },
             },
         },
@@ -48,7 +48,7 @@ export default defineConfig(({ command, mode }) => {
             port: 3000,
             proxy: {
                 '^/api/': {
-                    target: 'http://localhost:8080', // 后台服务器地址
+                    target: 'https://prts.maa.plus', // 后台服务器地址
                     changeOrigin: true /* 允许跨域 */,
                     rewrite: (path) => path.replace(/^\/api/, ''),
                 },

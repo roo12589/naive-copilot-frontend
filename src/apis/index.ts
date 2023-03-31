@@ -5,7 +5,7 @@ import res from './interceptor/response'
 const [requestResolve, requestReject] = req
 const [responseResolve, responseReject] = res
 
-const request = axios.create({
+const api = axios.create({
     baseURL: import.meta.env.VITE_BASE_API,
     timeout: 10 * 1000,
     headers: {
@@ -13,8 +13,8 @@ const request = axios.create({
     },
 })
 
-request.interceptors.request.use(requestResolve, requestReject)
-request.interceptors.response.use(responseResolve, responseReject)
+api.interceptors.request.use(requestResolve, requestReject)
+api.interceptors.response.use(responseResolve, responseReject)
 
 const CancelToken = axios.CancelToken
 export function useCancelToken(fetcher) {
@@ -53,4 +53,4 @@ fetchUser('1000')
 // 但可以在组件销毁的生命周期中调用
 abortRequest() */
 
-export default request
+export default api
