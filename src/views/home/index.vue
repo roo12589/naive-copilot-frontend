@@ -1,5 +1,5 @@
 <template>
-    <n-layout has-sider>
+    <n-layout has-sider sider-placement="right">
         <n-layout-content>
             <n-card size="medium">
                 <template #header>
@@ -42,18 +42,19 @@
                             filterable
                             clearable
                             placeholder="选择"
-                            :options="options"
+                            :options="operatorOptions"
                             :render-label="renderLabel"
                             :render-tag="renderTagInclude"
                             @update:value="handleSearch"
-                        />&nbsp;
+                        />
+                        &nbsp;
                         <n-select
                             v-model:value="query.operatorExclude"
                             multiple
                             filterable
                             clearable
                             placeholder="排除"
-                            :options="options"
+                            :options="operatorOptions"
                             :render-label="renderLabel"
                             :render-tag="renderTagExclude"
                             @update:value="handleSearch"
@@ -73,11 +74,19 @@
                 <n-spin size="medium" class="solutions" :show="loading">
                     <n-empty v-if="!loading && solutions.length === 0" description="暂无数据"></n-empty>
 
-                    <SolutionItem v-for="solution in solutions" :solution="solution" />
+                    <SolutionItem v-for="solution in solutions" :solution="solution" @click="showDrawer(solution)" />
                 </n-spin>
             </div>
         </n-layout-content>
-        <n-layout-sider content-style="padding:0 24px;">
+        <n-layout-sider
+            content-style="padding:0 24px;"
+            show-trigger="bar   "
+            collapse-mode="width"
+            width="300"
+            :default-collapsed="true"
+            :collapsed-width="10"
+            :native-scrollbar="true"
+        >
             <n-card size="medium">
                 <template #header>
                     <div class="flex-left-center">
@@ -109,6 +118,70 @@
             </div>
         </n-layout-sider>
     </n-layout>
+    <n-drawer v-model:show="drawerVisible" width="1000" placement="right" class="drawer">
+        <n-drawer-content title="title" closable>
+            <div class="solution-info">
+                <div class="left">
+                    <p class="title">{{ drawerData?.content.doc.title }}</p>
+                    <div>
+                        <n-tag type="default" size="medium">
+                            <b>{{ drawerData?.content.stage_name }}</b>
+                        </n-tag>
+                    </div>
+                    {{ drawerData?.content.doc.details }}
+                </div>
+                <div class="right">
+                    <div class="top">
+                        <div class="flex-center">
+                            <!-- <n-icon><StarSharp /></n-icon> -->
+                            <n-rate
+                                allow-half
+                                :default-value="(drawerData?.rating_level || 0) / 2"
+                                readonly
+                                size="small"
+                            />
+                            &nbsp;&nbsp;
+                            <n-icon><EyeOutline /></n-icon>
+                            {{ drawerData?.views }}&nbsp;&nbsp;
+                            <n-icon><TimeOutline /></n-icon>
+                            <n-time :time="drawerData?.upload_time" :to="Date.now()" type="relative" />
+                        </div>
+                        <div class="flex-center">
+                            <n-icon><PersonCircleOutline /></n-icon>
+                            {{ drawerData?.uploader }}
+                        </div>
+                    </div>
+                    <div class="bottom">
+                        <b>操作员</b>
+                        <div class="operators">
+                            <n-tag
+                                class="margin-5"
+                                type="default"
+                                size="medium"
+                                v-for="operator in drawerData?.content.opers"
+                            >
+                                op skill{{ operator.skill }}
+                            </n-tag>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <n-divider />
+            <div class="operators">
+                <div class="operator-item" v-for="operator in drawerData?.content.opers">
+                    <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
+                    {{ operator.name }}
+                    技能
+                    <b>{{ operator.skill }}</b>
+                </div>
+            </div>
+            <div class="steps">
+                <StepCard v-for="(action,index) in drawerData?.content.actions" :action="action" mark>
+                <template #mark>{{index}}</template>
+                </StepCard>
+            </div>
+        </n-drawer-content>
+    </n-drawer>
 </template>
 
 <script lang="tsx" setup>
@@ -129,20 +202,26 @@ import {
 import { Link, Solution } from '@/types'
 import { getSolutionList } from '@/apis/solution'
 import SolutionItem from './SolutionItem.vue'
+import StepCard from '@/components/StepCard/index.vue'
 
 const query = reactive({
-    pageSize: 10,
+    pageSize: 3,
     documentWord: '',
     levelWord: '',
     operatorInclude: [],
     operatorExclude: [],
 })
 
-const options = OPERATORS.map((operator: any) => {
+const operatorOptions = OPERATORS.map((operator: any) => {
     operator.label = operator.name
     operator.value = operator.name
     return operator
 })
+const getOperatorAvatarUrl = (name: string) => {
+    const id = OPERATORS.find((operator) => operator.name === name)?.id
+    return 'https://prts.plus/assets/operator-avatars/' + id + '.png'
+}
+
 const renderLabel = (option: SelectOption) => {
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -213,9 +292,16 @@ function renderSortIcon(icon: Component) {
     }
 }
 
+const drawerVisible = ref(false)
+const drawerData = ref<Solution | null>(null)
+const showDrawer = function (solution: Solution) {
+    drawerData.value = solution
+    drawerVisible.value = true
+}
+
 onMounted(async () => {
-    // const { solutionList } = await useSolutionList(1)
-    // solutions.value = solutionList
+    const { solutionList } = await useSolutionList(1, query.pageSize)
+    solutions.value = solutionList
     // console.log(arr)
     friendlyLinks.value = [
         { url: 'http://', title: '链接1' },
@@ -250,13 +336,19 @@ async function useSolutionList(page: number, ...args: any[]) {
             margin-bottom: 5px;
         }
     }
-    .select{
+    .select {
         display: flex;
     }
 }
 .solutions-container {
     .solutions {
         min-height: 300px;
+    }
+}
+.drawer .solution-info {
+    border: none;
+    &:hover {
+        box-shadow: none;
     }
 }
 </style>

@@ -5,8 +5,9 @@
         </template>
         <template #subtitle>
             <n-divider vertical />
-            <n-button quaternary type="primary" size="medium" @click="">&nbsp;&nbsp;b1&nbsp;&nbsp;</n-button>
-            <n-button quaternary type="primary" size="medium" @click="">&nbsp;&nbsp;b2&nbsp;&nbsp;</n-button>
+            
+            <n-button quaternary type="primary" size="medium" @click=""><router-link to="/home">首页</router-link></n-button>
+            <n-button quaternary type="primary" size="medium" @click=""><router-link to="/test">test</router-link></n-button>
         </template>
 
         <template #avatar>

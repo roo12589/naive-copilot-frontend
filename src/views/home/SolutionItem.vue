@@ -53,14 +53,14 @@ function getRateText(score: number) {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .solution-info {
-    margin: 10px 0;
-    display: flex;
-    border: 1px solid rgb(239, 239, 245);
-    // box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.06), 0 5px 12px 4px rgba(0, 0, 0, 0.04);
-    border-radius: 10px;
-    padding: 24px;
+    @extend .base-card;
+    cursor: pointer;
+    &:hover {
+        box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.06),
+            0 5px 12px 4px rgba(0, 0, 0, 0.04);
+    }
     > div {
         width: 50%;
         height: 100%;

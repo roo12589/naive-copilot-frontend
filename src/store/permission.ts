@@ -35,9 +35,9 @@ export const usePermissionStore = defineStore('permission', {
         routes(state): any[] {
             return baseRoutes.concat(state.accessRoutes)
         },
-        menus() {
-            return this.routes.filter((route) => route.name && !route.isHidden)
-        },
+        // menus() {
+        //     return this.routes.filter((route) => route.name && !route.isHidden)
+        // },
     },
     actions: {
         initRoutes(role = []) {

@@ -1,10 +1,10 @@
-import { IconName } from '@blueprintjs/core'
+// import { IconName } from '@blueprintjs/core'
 
 import { CopilotDocV1 } from './copilot.schema'
 
 interface ActionType {
   type: 'choice'
-  icon: IconName
+  icon: any
   accent: string
   title: string
   value: CopilotDocV1.Type | 'Unknown'
