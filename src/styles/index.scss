@@ -108,7 +108,11 @@ h1 {
   min-height: 100vh;
   // max-width: 1280px;
   margin: 0 auto;
+  // 在#app 加padding导致奇怪问题
+  //（table scroll-x滚动情况下 app宽度改变） 
+  // 加box-sizing或者将padding移到body
   padding: 0 2rem;
+  box-sizing: border-box;
   // text-align: center;
 }
 

@@ -19,7 +19,7 @@
                     <n-icon><EyeOutline /></n-icon>
                     {{ solution.views }}&nbsp;&nbsp;
                     <n-icon><TimeOutline /></n-icon>
-                    <n-time :time="solution.upload_time" :to="Date.now()" type="relative" />
+                    <n-time :time="new Date(solution.upload_time).getTime()" :to="Date.now()" type="relative" />
                 </div>
                 <div class="flex-center">
                     <n-icon><PersonCircleOutline /></n-icon>

@@ -2,7 +2,7 @@ import type { AxiosInstance } from 'axios'
 export type Api = () => AxiosInstance
 export interface Solution {
     id: number;
-    upload_time: number;
+    upload_time: string;
     uploader: string;
     views: number;
     hot_score: number;

@@ -10,30 +10,35 @@
                 </template>
                 <div class="query">
                     <div class="input">
-                        <n-input
-                            v-model:value="query.documentWord"
-                            type="text"
-                            placeholder="标题"
-                            size="medium"
-                            clearable
-                            @change="handleSearch"
-                        >
-                            <!-- <template #prefix>
-                        <n-icon><BookmarksOutline /></n-icon>
-                    </template> -->
-                        </n-input>
-                        <n-input
-                            v-model:value="query.levelWord"
-                            type="text"
-                            placeholder="类型"
-                            size="medium"
-                            clearable
-                            @change="handleSearch"
-                        >
-                            <!-- <template #prefix>
-                        <n-icon><BookmarksOutline /></n-icon>
-                    </template> -->
-                        </n-input>
+                        <div class="single" v-if="tab === 'single'">
+                            <n-input
+                                v-model:value="query.documentWord"
+                                type="text"
+                                placeholder="标题"
+                                size="medium"
+                                clearable
+                                @change="handleSearch"
+                            />
+                            &nbsp;
+                            <n-input
+                                v-model:value="query.levelWord"
+                                type="text"
+                                placeholder="类型"
+                                size="medium"
+                                clearable
+                                @change="handleSearch"
+                            />
+                        </div>
+                        <div v-else>
+                            <n-input
+                                v-model:value="query.multipleDocumentWord"
+                                type="text"
+                                placeholder="输入关键词用','隔开"
+                                size="medium"
+                                clearable
+                                @change="handleSearch"
+                            />
+                        </div>
                     </div>
                     <div class="select">
                         <n-select
@@ -62,21 +67,38 @@
                     </div>
                 </div>
             </n-card>
-            <div class="solutions-container">
-                <div class="sort">
-                    <n-dropdown trigger="hover" placement="bottom-start" @select="handleSort" :options="sortOptions">
-                        <n-button text style="margin-left: 24px">
-                            <n-icon><ListSharp /></n-icon>
-                            &nbsp; 排序
-                        </n-button>
-                    </n-dropdown>
-                </div>
-                <n-spin size="medium" class="solutions" :show="loading">
-                    <n-empty v-if="!loading && solutions.length === 0" description="暂无数据"></n-empty>
-
-                    <SolutionItem v-for="solution in solutions" :solution="solution" @click="showDrawer(solution)" />
-                </n-spin>
-            </div>
+            <n-tabs v-model:value="tab" type="line" size="medium">
+                <n-tab-pane name="single" tab="精确查询">
+                    <div class="solutions-container">
+                        <div class="sort">
+                            <n-dropdown
+                                trigger="hover"
+                                placement="bottom-start"
+                                @select="handleSort"
+                                :options="sortOptions"
+                            >
+                                <n-button text style="margin-left: 24px">
+                                    <n-icon><ListSharp /></n-icon>
+                                    &nbsp; 排序
+                                </n-button>
+                            </n-dropdown>
+                        </div>
+                        <n-spin size="medium" class="solutions" :show="loading">
+                            <n-empty v-if="!loading && solutions.length === 0" description="暂无数据"></n-empty>
+                            <SolutionItem
+                                v-for="solution in solutions"
+                                :solution="solution"
+                                @click="showDrawer(solution)"
+                            />
+                        </n-spin>
+                    </div>
+                </n-tab-pane>
+                <n-tab-pane name="multiple" tab="一键查询">
+                    <div style="overflow: hidden">
+                        <n-data-table :columns="columns" :data="tableData" :loading="loading" :scroll-x="1500" />
+                    </div>
+                </n-tab-pane>
+            </n-tabs>
         </n-layout-content>
         <n-layout-sider
             content-style="padding:0 24px;"
@@ -120,66 +142,73 @@
     </n-layout>
     <n-drawer v-model:show="drawerVisible" width="1000" placement="right" class="drawer">
         <n-drawer-content title="title" closable>
-            <div class="solution-info">
-                <div class="left">
-                    <p class="title">{{ drawerData?.content.doc.title }}</p>
-                    <div>
-                        <n-tag type="default" size="medium">
-                            <b>{{ drawerData?.content.stage_name }}</b>
-                        </n-tag>
-                    </div>
-                    {{ drawerData?.content.doc.details }}
-                </div>
-                <div class="right">
-                    <div class="top">
-                        <div class="flex-center">
-                            <!-- <n-icon><StarSharp /></n-icon> -->
-                            <n-rate
-                                allow-half
-                                :default-value="(drawerData?.rating_level || 0) / 2"
-                                readonly
-                                size="small"
-                            />
-                            &nbsp;&nbsp;
-                            <n-icon><EyeOutline /></n-icon>
-                            {{ drawerData?.views }}&nbsp;&nbsp;
-                            <n-icon><TimeOutline /></n-icon>
-                            <n-time :time="drawerData?.upload_time" :to="Date.now()" type="relative" />
-                        </div>
-                        <div class="flex-center">
-                            <n-icon><PersonCircleOutline /></n-icon>
-                            {{ drawerData?.uploader }}
-                        </div>
-                    </div>
-                    <div class="bottom">
-                        <b>操作员</b>
-                        <div class="operators">
-                            <n-tag
-                                class="margin-5"
-                                type="default"
-                                size="medium"
-                                v-for="operator in drawerData?.content.opers"
-                            >
-                                op skill{{ operator.skill }}
+            <div v-if="drawerData">
+                <div class="solution-info">
+                    <div class="left">
+                        <p class="title">{{ drawerData.content.doc.title }}</p>
+                        <div>
+                            <n-tag type="default" size="medium">
+                                <b>{{ drawerData.content.stage_name }}</b>
                             </n-tag>
                         </div>
+                        {{ drawerData.content.doc.details }}
+                    </div>
+                    <div class="right">
+                        <div class="top">
+                            <div class="flex-center">
+                                <!-- <n-icon><StarSharp /></n-icon> -->
+                                <n-rate
+                                    allow-half
+                                    :default-value="(drawerData.rating_level || 0) / 2"
+                                    readonly
+                                    size="small"
+                                />
+                                &nbsp;&nbsp;
+                                <n-icon><EyeOutline /></n-icon>
+                                {{ drawerData.views }}&nbsp;&nbsp;
+                                <n-icon><TimeOutline /></n-icon>
+                                <n-time
+                                    :time="new Date(drawerData.upload_time).getTime()"
+                                    :to="Date.now()"
+                                    type="relative"
+                                />
+                            </div>
+                            <div class="flex-center">
+                                <n-icon><PersonCircleOutline /></n-icon>
+                                {{ drawerData.uploader }}
+                            </div>
+                        </div>
+                        <div class="bottom">
+                            <b>操作员</b>
+                            <div class="operators">
+                                <n-tag
+                                    class="margin-5"
+                                    type="default"
+                                    size="medium"
+                                    v-for="operator in drawerData.content.opers"
+                                >
+                                    op skill{{ operator.skill }}
+                                </n-tag>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <n-divider />
-            <div class="operators">
-                <div class="operator-item" v-for="operator in drawerData?.content.opers">
-                    <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
-                    {{ operator.name }}
-                    技能
-                    <b>{{ operator.skill }}</b>
+                <n-divider />
+                <div class="operators">
+                    <div class="operator-item" v-for="operator in drawerData.content.opers">
+                        <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
+                        {{ operator.name }}
+                        技能
+                        <b>{{ operator.skill }}</b>
+                    </div>
+                </div>
+                <div class="steps">
+                    <StepCard mark v-for="(action, index) in drawerData.content.actions" :action="(action as any)">
+                        <template #mark>{{ index }}</template>
+                    </StepCard>
                 </div>
             </div>
-            <div class="steps">
-                <StepCard v-for="(action,index) in drawerData?.content.actions" :action="action" mark>
-                <template #mark>{{index}}</template>
-                </StepCard>
-            </div>
+            <n-empty v-else description="暂无数据" />
         </n-drawer-content>
     </n-drawer>
 </template>
@@ -187,6 +216,8 @@
 <script lang="tsx" setup>
 import { ref, reactive, onMounted, Component, h } from 'vue'
 import { OPERATORS } from '@/models/generated/operators'
+import SolutionItem from './SolutionItem.vue'
+import StepCard from '@/components/StepCard/index.vue'
 import { NIcon, SelectOption } from 'naive-ui'
 import {
     AddCircleOutline,
@@ -201,12 +232,12 @@ import {
 } from '@vicons/ionicons5'
 import { Link, Solution } from '@/types'
 import { getSolutionList } from '@/apis/solution'
-import SolutionItem from './SolutionItem.vue'
-import StepCard from '@/components/StepCard/index.vue'
+import { columns } from './constant'
 
 const query = reactive({
     pageSize: 3,
     documentWord: '',
+    multipleDocumentWord: '',
     levelWord: '',
     operatorInclude: [],
     operatorExclude: [],
@@ -245,7 +276,14 @@ const renderTagExclude = ({ option, handleClose }) => {
     )
 }
 
+const tab = ref('multiple')
+
+const tableData = ref<Solution[]>([])
+
 async function handleSearch() {
+    tab.value === 'single' ? await handleSingleSearch() : await handleMultipleSearch()
+}
+async function handleSingleSearch() {
     const operatorWord = query.operatorInclude.toString() + query.operatorExclude.map((s) => '~' + s).toString()
     const { solutionList } = await useSolutionList(
         1,
@@ -258,6 +296,20 @@ async function handleSearch() {
     )
     solutions.value = solutionList
 }
+async function handleMultipleSearch() {
+    console.log(query)
+    const result: Solution[] = []
+    const words = query.multipleDocumentWord.split(',')
+    for (const word of words) {
+        const operatorWord = query.operatorInclude.toString() + query.operatorExclude.map((s) => '~' + s).toString()
+        const { solutionList } = await useSolutionList(1, 3, 'hot', true, word, query.levelWord, operatorWord)
+        solutionList[0] && result.push(solutionList[0])
+    }
+    console.log(result)
+
+    tableData.value = result
+}
+
 const loading = ref(true)
 const solutions = ref<Solution[]>([])
 const friendlyLinks = ref<Link[]>([])
@@ -301,8 +353,8 @@ const showDrawer = function (solution: Solution) {
 
 onMounted(async () => {
     const { solutionList } = await useSolutionList(1, query.pageSize)
-    solutions.value = solutionList
-    // console.log(arr)
+    tableData.value = solutionList
+
     friendlyLinks.value = [
         { url: 'http://', title: '链接1' },
         { url: 'http://', title: '链接2' },
@@ -315,7 +367,12 @@ async function useSolutionList(page: number, ...args: any[]) {
     const solutionListInfo = (await getSolutionList(page, ...args)).data
     console.log(solutionListInfo)
     const solutionList = solutionListInfo?.data || []
-    solutionList.forEach((s: any) => (s.content = JSON.parse(s.content)))
+    solutionList.forEach((s: Solution) => {
+        s.content = JSON.parse(s.content as unknown as string)
+        // for(const key in s.content){
+        //     s[key] = s.content[key];
+        // }
+    })
     loading.value = false
     return {
         solutionList,
@@ -334,6 +391,9 @@ async function useSolutionList(page: number, ...args: any[]) {
         // display: flex;
         .n-input {
             margin-bottom: 5px;
+        }
+        .single {
+            display: flex;
         }
     }
     .select {
