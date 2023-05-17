@@ -1,7 +1,9 @@
 <template>
-    <div class="solution-info">
-        <div class="left">
-            <p class="title">{{ solution.content.doc.title }}</p>
+    <div
+        class="cursor-pointer my-2 flex border border-[rgb(239,239,245)] rounded-lg p-6 transition-all hover:shadow-md"
+    >
+        <div class="w-2/4 h-full px-2 box-border flex flex-col justify-start items-start whitespace-pre-line text-left">
+            <p class="m-0 font-bold text-[18px]">{{ solution.content.doc.title }}</p>
             <div>
                 <n-tag type="default" size="medium">
                     <b>{{ solution.content.stage_name }}</b>
@@ -9,9 +11,9 @@
             </div>
             {{ solution.content.doc.details }}
         </div>
-        <div class="right">
-            <div class="top">
-                <div class="flex-center">
+        <div class="w-2/4 h-full px-2 box-border flex flex-col">
+            <div class="flex flex-col items-end h-20">
+                <div class="flex justify-center items-center">
                     <!-- <n-icon><StarSharp /></n-icon> -->
                     {{ getRateText(solution.rating_level / 2) }}
                     <n-rate allow-half :default-value="solution.rating_level / 2" readonly size="small" />
@@ -21,15 +23,15 @@
                     <n-icon><TimeOutline /></n-icon>
                     <n-time :time="new Date(solution.upload_time).getTime()" :to="Date.now()" type="relative" />
                 </div>
-                <div class="flex-center">
+                <div class="flex justify-center items-center">
                     <n-icon><PersonCircleOutline /></n-icon>
                     {{ solution.uploader }}
                 </div>
             </div>
-            <div class="bottom">
+            <div class="flex flex-col justify-start items-start">
                 <b>操作员</b>
-                <div class="operators">
-                    <n-tag class="margin-5" type="default" size="medium" v-for="operator in solution.content.opers">
+                <div class="w-full flex justify-start flex-wrap">
+                    <n-tag class="m-1" type="default" size="medium" v-for="operator in solution.content.opers">
                         op skill{{ operator.skill }}
                     </n-tag>
                 </div>
@@ -52,55 +54,3 @@ function getRateText(score: number) {
     if (score >= 4.5) return '😍几乎完美'
 }
 </script>
-
-<style lang="scss">
-.solution-info {
-    @extend .base-card;
-    cursor: pointer;
-    &:hover {
-        box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.06),
-            0 5px 12px 4px rgba(0, 0, 0, 0.04);
-    }
-    > div {
-        width: 50%;
-        height: 100%;
-        padding: 0 10px;
-        box-sizing: border-box;
-    }
-    .left {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        white-space: pre-line;
-        text-align: left;
-        .title {
-            margin: 0;
-            font-weight: bold;
-            font-size: 18px;
-        }
-    }
-    .right {
-        display: flex;
-        flex-direction: column;
-        .top {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            height: 80px;
-        }
-        .bottom {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-            .operators {
-                width: 100%;
-                display: flex;
-                justify-content: flex-start;
-                flex-wrap: wrap;
-            }
-        }
-    }
-}
-</style>

@@ -35,13 +35,6 @@ export default defineConfig(({ command, mode }) => {
                 '@': path.resolve(__dirname, './src'),
             },
         },
-        css: {
-            preprocessorOptions: {
-                scss: {
-                    additionalData: `@import '@/styles/index.scss';`,
-                },
-            },
-        },
         server: {
             open: false,
             host: '127.0.0.1',

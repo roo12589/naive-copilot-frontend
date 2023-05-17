@@ -1,7 +1,7 @@
 <template>
-    <n-page-header class="header">
+    <n-page-header class="py-4">
         <template #title>
-            <a href="https://anyway.fm/" style="text-decoration: none; color: inherit">Anyway.FM</a>
+            <a href="https://anyway.fm/" class="no-underline">Anyway.FM</a>
         </template>
         <template #subtitle>
             <n-divider vertical />

@@ -2,7 +2,7 @@
     <n-drawer v-model:show="show" width="80%" placement="right">
         <n-drawer-content>
             <template #header>
-                <div class="title">
+                <div class="flex justify-between">
                     <div class="text">{{ title }}</div>
                     <n-space class="button">
                         <n-button text quaternary type="primary" size="medium" @click="downloadSolution">下载</n-button>
@@ -31,12 +31,8 @@ const copyCode = () => {
 }
 </script>
 
-<style scoped lang="scss">
-.title {
-    display: flex;
-    justify-content: space-between;
-}
-::v-deep(.n-drawer-header__main) {
+<style scoped>
+:deep(.n-drawer-header__main) {
     width: 100%;
 }
 </style>

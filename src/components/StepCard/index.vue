@@ -1,7 +1,9 @@
 <template>
-    <div class="step-card">
-        <div class="corner-mark" v-if="mark"><slot name="mark"></slot></div>
-        <div class="title">
+    <div class="p-3 my-2 relative border border-[rgb(239,239,245)] rounded-lg transition-all">
+        <div class="flex justify-center items-center px-1 left-0 top-0 min-w-[0.25rem] bg-white translate-x-[5px] translate-y-[-50%] origin-top-left text-gray-400" v-if="mark">
+            <slot name="mark"></slot>
+        </div>
+        <div class="text-lg flex items-center">
             <slot name="title">
                 <n-icon :component="getIcon(type.value)"></n-icon>
 
@@ -11,15 +13,15 @@
         <div class="content">
             <slot>
                 <n-space v-if="action.type == CopilotDocV1.Type.Deploy" class="action">
-                    <div class="flex-center">
+                    <div class="flex justify-center items-center">
                         <n-icon><PersonCircleOutline /></n-icon>
                         {{ action.type }}
                     </div>
-                    <div class="flex-center">
+                    <div class="flex justify-center items-center">
                         <n-icon><LocationOutline /></n-icon>
                         {{ action.location }}
                     </div>
-                    <div class="flex-center">
+                    <div class="flex justify-center items-center">
                         <n-icon><MoveSharp /></n-icon>
                         {{ action.direction }}
                     </div>
@@ -64,32 +66,3 @@ const getIcon = (s: string) => {
 //     type: CopilotDocV1.Type.SpeedUp,
 // }
 </script>
-
-<style scoped lang="scss">
-.step-card {
-    padding: 12px;
-    margin: 10px 0;
-    position: relative;
-    border: 1px solid rgb(239, 239, 245);
-    border-radius: 10px;
-    transition: all 0.3s;
-    .title {
-        font-size: 18px;
-        font-weight: bold;
-        display: flex;
-        align-items: center
-    }
-    .corner-mark {
-        @extend .flex-center;
-        padding: 5px;
-        position: absolute;
-        left: 0;
-        top: 0;
-        min-width: 5px;
-        background-color: #fff;
-        transform: translate(5px, -50%);
-        transform-origin: 0 0;
-        color: #999aaa;
-    }
-}
-</style>

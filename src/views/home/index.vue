@@ -1,46 +1,48 @@
 <template>
     <n-layout has-sider sider-placement="right">
         <n-layout-content>
-            <n-card size="medium">
+            <n-card size="medium" class="rounded-lg my-2">
                 <template #header>
-                    <div class="flex-left-center">
+                    <div class="flex justify-start items-center">
                         <n-icon size="22"><BookmarksOutline /></n-icon>
                         查找
                     </div>
                 </template>
-                <div class="query">
-                    <div class="input">
-                        <div class="single" v-if="tab === 'single'">
-                            <n-input
-                                v-model:value="query.documentWord"
-                                type="text"
-                                placeholder="标题"
-                                size="medium"
-                                clearable
-                                @change="handleSearch"
-                            />
-                            &nbsp;
-                            <n-input
-                                v-model:value="query.levelWord"
-                                type="text"
-                                placeholder="类型"
-                                size="medium"
-                                clearable
-                                @change="handleSearch"
-                            />
-                        </div>
-                        <div v-else>
-                            <n-input
-                                v-model:value="query.multipleDocumentWord"
-                                type="text"
-                                placeholder="输入关键词用','隔开"
-                                size="medium"
-                                clearable
-                                @change="handleSearch"
-                            />
-                        </div>
+                <div>
+                    <div class="flex" v-if="tab === 'single'">
+                        <n-input
+                            v-model:value="query.documentWord"
+                            type="text"
+                            placeholder="标题"
+                            size="medium"
+                            clearable
+                            @change="handleSearch"
+                            class="mb-1"
+                        />
+                        &nbsp;
+                        <n-input
+                            v-model:value="query.levelWord"
+                            type="text"
+                            placeholder="类型"
+                            size="medium"
+                            clearable
+                            @change="handleSearch"
+                            class="mb-1"
+                        />
                     </div>
-                    <div class="select">
+                    <div v-else>
+                        <n-input
+                            v-model:value="query.multipleDocumentWord"
+                            type="text"
+                            placeholder="输入关键词用','隔开"
+                            size="medium"
+                            clearable
+                            @change="handleSearch"
+                            class="mb-1"
+                        />
+                    </div>
+
+                    <div class="flex">
                         <n-select
                             v-model:value="query.operatorInclude"
                             multiple
@@ -69,21 +71,20 @@
             </n-card>
             <n-tabs v-model:value="tab" type="line" size="medium">
                 <n-tab-pane name="single" tab="精确查询">
-                    <div class="solutions-container">
-                        <div class="sort">
-                            <n-dropdown
-                                trigger="hover"
-                                placement="bottom-start"
-                                @select="handleSort"
-                                :options="sortOptions"
-                            >
-                                <n-button text style="margin-left: 24px">
-                                    <n-icon><ListSharp /></n-icon>
-                                    &nbsp; 排序
-                                </n-button>
-                            </n-dropdown>
-                        </div>
-                        <n-spin size="medium" class="solutions" :show="loading">
+                    <div>
+                        <n-dropdown
+                            trigger="hover"
+                            placement="bottom-start"
+                            @select="handleSort"
+                            :options="sortOptions"
+                        >
+                            <n-button text class="ml-6">
+                                <n-icon><ListSharp /></n-icon>
+                                &nbsp; 排序
+                            </n-button>
+                        </n-dropdown>
+
+                        <n-spin size="medium" class="min-h-[20rem]" :show="loading">
                             <n-empty v-if="!loading && solutions.length === 0" description="暂无数据"></n-empty>
                             <SolutionItem
                                 v-for="solution in solutions"
@@ -94,15 +95,15 @@
                     </div>
                 </n-tab-pane>
                 <n-tab-pane name="multiple" tab="一键查询">
-                    <div style="overflow: hidden">
+                    <div class="overflow-hidden">
                         <n-data-table :columns="columns" :data="tableData" :loading="loading" :scroll-x="1500" />
                     </div>
                 </n-tab-pane>
             </n-tabs>
         </n-layout-content>
         <n-layout-sider
-            content-style="padding:0 24px;"
-            show-trigger="bar   "
+            content-style="padding:0 1.5rem;"
+            show-trigger="bar"
             collapse-mode="width"
             width="300"
             :default-collapsed="true"
@@ -111,7 +112,7 @@
         >
             <n-card size="medium">
                 <template #header>
-                    <div class="flex-left-center">
+                    <div class="flex justify-start items-center">
                         <n-icon size="22"><AddCircleOutline /></n-icon>
                         创建
                     </div>
@@ -121,7 +122,7 @@
             </n-card>
             <n-card size="medium">
                 <template #header>
-                    <div class="flex-left-center">
+                    <div class="flex justify-start items-center">
                         <n-icon size="22"><InformationCircleOutline /></n-icon>
                         公告
                     </div>
@@ -135,17 +136,17 @@
                     <br />
                 </n-list>
             </n-card>
-            <div class="friendly-links">
-                <a v-for="link in friendlyLinks" :href="link.url" class="primary-link">{{ link.title }}</a>
+            <div>
+                <a v-for="link in friendlyLinks" :href="link.url">{{ link.title }}</a>
             </div>
         </n-layout-sider>
     </n-layout>
     <n-drawer v-model:show="drawerVisible" width="1000" placement="right" class="drawer">
         <n-drawer-content title="title" closable>
             <div v-if="drawerData">
-                <div class="solution-info">
-                    <div class="left">
-                        <p class="title">{{ drawerData.content.doc.title }}</p>
+                <div class="flex">
+                    <div class="w-2/4 h-full px-2 box-border flex flex-col justify-start items-start whitespace-pre-line text-left">
+                        <p class="m-0 font-bold text-[18px]">{{ drawerData.content.doc.title }}</p>
                         <div>
                             <n-tag type="default" size="medium">
                                 <b>{{ drawerData.content.stage_name }}</b>
@@ -153,9 +154,9 @@
                         </div>
                         {{ drawerData.content.doc.details }}
                     </div>
-                    <div class="right">
-                        <div class="top">
-                            <div class="flex-center">
+                    <div class="w-2/4 h-full px-2 box-border flex flex-col">
+                        <div class="flex flex-col items-end h-20">
+                            <div class="flex justify-center items-center">
                                 <!-- <n-icon><StarSharp /></n-icon> -->
                                 <n-rate
                                     allow-half
@@ -173,16 +174,16 @@
                                     type="relative"
                                 />
                             </div>
-                            <div class="flex-center">
+                            <div class="flex justify-center items-center">
                                 <n-icon><PersonCircleOutline /></n-icon>
                                 {{ drawerData.uploader }}
                             </div>
                         </div>
-                        <div class="bottom">
+                        <div class="flex flex-col justify-start items-start">
                             <b>操作员</b>
-                            <div class="operators">
+                            <div class="w-full flex justify-start flex-wrap">
                                 <n-tag
-                                    class="margin-5"
+                                    class="m-1"
                                     type="default"
                                     size="medium"
                                     v-for="operator in drawerData.content.opers"
@@ -194,7 +195,7 @@
                     </div>
                 </div>
                 <n-divider />
-                <div class="operators">
+                <div class="w-full flex justify-start flex-wrap">
                     <div class="operator-item" v-for="operator in drawerData.content.opers">
                         <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
                         {{ operator.name }}
@@ -255,7 +256,7 @@ const getOperatorAvatarUrl = (name: string) => {
 
 const renderLabel = (option: SelectOption) => {
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div class="flex justify-center items-center">
             <n-avatar size="small" src={'https://prts.plus/assets/operator-avatars/' + option.id + '.png'}></n-avatar>
             <span>{option.label}</span>
         </div>
@@ -380,35 +381,3 @@ async function useSolutionList(page: number, ...args: any[]) {
     }
 }
 </script>
-
-<style lang="scss" scoped>
-.n-card {
-    @extend .border-radius-10;
-    @extend .margin-col-10;
-}
-.query {
-    .input {
-        // display: flex;
-        .n-input {
-            margin-bottom: 5px;
-        }
-        .single {
-            display: flex;
-        }
-    }
-    .select {
-        display: flex;
-    }
-}
-.solutions-container {
-    .solutions {
-        min-height: 300px;
-    }
-}
-.drawer .solution-info {
-    border: none;
-    &:hover {
-        box-shadow: none;
-    }
-}
-</style>
