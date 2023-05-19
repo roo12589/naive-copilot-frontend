@@ -7,10 +7,10 @@
 </template>
 
 <script setup lang="ts">
-import AppProvider from '@/components/AppProvider/index.vue'
+import AppProvider from '@/components/appProvider/index.vue'
+import Header from '@/components/Header/index.vue'
 import useTheme from './hooks/useTheme'
 import { onMounted } from 'vue'
-import Header from '@/components/header/index.vue'
 const { theme, toggleTheme } = useTheme()
 onMounted(() => {
     window.$loadingBar.start()

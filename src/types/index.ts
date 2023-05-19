@@ -1,6 +1,6 @@
 import type { AxiosInstance } from 'axios'
 export type Api = () => AxiosInstance
-export interface Solution {
+export interface Operation {
     id: number;
     upload_time: string;
     uploader: string;
@@ -51,9 +51,9 @@ export interface Response<T>{
 
 }
 
-export interface solutionListInfo{
+export interface operationListInfo{
     has_next: boolean;
     page:number;
     total:number;
-    data:Solution[]
+    data:Operation[]
 }

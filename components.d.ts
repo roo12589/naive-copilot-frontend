@@ -7,9 +7,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    AppProvider: typeof import('./src/components/AppProvider/index.vue')['default']
+    AppProvider: typeof import('./src/components/appProvider/index.vue')['default']
     Header: typeof import('./src/components/header/index.vue')['default']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     NAvatar: typeof import('naive-ui')['NAvatar']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
@@ -33,7 +32,6 @@ declare module '@vue/runtime-core' {
     NNotificationProvider: typeof import('naive-ui')['NNotificationProvider']
     NPageHeader: typeof import('naive-ui')['NPageHeader']
     NRate: typeof import('naive-ui')['NRate']
-    NResult: typeof import('naive-ui')['NResult']
     NSelect: typeof import('naive-ui')['NSelect']
     NSpace: typeof import('naive-ui')['NSpace']
     NSpin: typeof import('naive-ui')['NSpin']
@@ -43,6 +41,5 @@ declare module '@vue/runtime-core' {
     NTime: typeof import('naive-ui')['NTime']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    StepCard: typeof import('./src/components/StepCard/index.vue')['default']
   }
 }

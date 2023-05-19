@@ -1,4 +1,4 @@
-import { Solution } from '@/types'
+import { Operation } from '@/types'
 import { copyText } from '@/utils'
 import { DataTableColumn, NButton, NTime } from 'naive-ui'
 type DataTableColumn2<T> = DataTableColumn<T> & {
@@ -10,7 +10,7 @@ type User = {
     sex: string
 }
 
-const _columns: DataTableColumn2<Solution>[] = [
+const _columns: DataTableColumn2<Operation>[] = [
     {
         key: 'content',
         title: 'content',

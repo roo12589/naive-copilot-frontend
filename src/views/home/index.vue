@@ -85,11 +85,11 @@
                         </n-dropdown>
 
                         <n-spin size="medium" class="min-h-[20rem]" :show="loading">
-                            <n-empty v-if="!loading && solutions.length === 0" description="暂无数据"></n-empty>
-                            <SolutionItem
-                                v-for="solution in solutions"
-                                :solution="solution"
-                                @click="showDrawer(solution)"
+                            <n-empty v-if="!loading && operations.length === 0" description="暂无数据"></n-empty>
+                            <OperationCard
+                                v-for="operation in operations"
+                                :operation="operation"
+                                @click="showDrawer(operation)"
                             />
                         </n-spin>
                     </div>
@@ -204,9 +204,9 @@
                     </div>
                 </div>
                 <div class="steps">
-                    <StepCard mark v-for="(action, index) in drawerData.content.actions" :action="(action as any)">
+                    <ActionCard mark v-for="(action, index) in drawerData.content.actions" :action="(action as any)">
                         <template #mark>{{ index }}</template>
-                    </StepCard>
+                    </ActionCard>
                 </div>
             </div>
             <n-empty v-else description="暂无数据" />
@@ -217,8 +217,8 @@
 <script lang="tsx" setup>
 import { ref, reactive, onMounted, Component, h } from 'vue'
 import { OPERATORS } from '@/models/generated/operators'
-import SolutionItem from './SolutionItem.vue'
-import StepCard from '@/components/StepCard/index.vue'
+import OperationCard from './OperationCard.vue'
+import ActionCard from "./ActionCard.vue"
 import { NIcon, SelectOption } from 'naive-ui'
 import {
     AddCircleOutline,
@@ -231,8 +231,8 @@ import {
     ListSharp,
     FlameOutline,
 } from '@vicons/ionicons5'
-import { Link, Solution } from '@/types'
-import { getSolutionList } from '@/apis/solution'
+import { Link, Operation } from '@/types'
+import { getOperationList } from '@/apis/operation'
 import { columns } from './constant'
 
 const query = reactive({
@@ -279,14 +279,14 @@ const renderTagExclude = ({ option, handleClose }) => {
 
 const tab = ref('multiple')
 
-const tableData = ref<Solution[]>([])
+const tableData = ref<Operation[]>([])
 
 async function handleSearch() {
     tab.value === 'single' ? await handleSingleSearch() : await handleMultipleSearch()
 }
 async function handleSingleSearch() {
     const operatorWord = query.operatorInclude.toString() + query.operatorExclude.map((s) => '~' + s).toString()
-    const { solutionList } = await useSolutionList(
+    const { operationList } = await useOperationList(
         1,
         query.pageSize,
         'hot',
@@ -295,16 +295,16 @@ async function handleSingleSearch() {
         query.levelWord,
         operatorWord
     )
-    solutions.value = solutionList
+    operations.value = operationList
 }
 async function handleMultipleSearch() {
     console.log(query)
-    const result: Solution[] = []
+    const result: Operation[] = []
     const words = query.multipleDocumentWord.split(',')
     for (const word of words) {
         const operatorWord = query.operatorInclude.toString() + query.operatorExclude.map((s) => '~' + s).toString()
-        const { solutionList } = await useSolutionList(1, 3, 'hot', true, word, query.levelWord, operatorWord)
-        solutionList[0] && result.push(solutionList[0])
+        const { operationList } = await useOperationList(1, 3, 'hot', true, word, query.levelWord, operatorWord)
+        operationList[0] && result.push(operationList[0])
     }
     console.log(result)
 
@@ -312,7 +312,7 @@ async function handleMultipleSearch() {
 }
 
 const loading = ref(true)
-const solutions = ref<Solution[]>([])
+const operations = ref<Operation[]>([])
 const friendlyLinks = ref<Link[]>([])
 
 const sortOptions = [
@@ -334,8 +334,8 @@ const sortOptions = [
     },
 ]
 async function handleSort(key: string) {
-    const { solutionList } = await useSolutionList(1, query.pageSize, key)
-    solutions.value = solutionList
+    const { operationList } = await useOperationList(1, query.pageSize, key)
+    operations.value = operationList
 }
 function renderSortIcon(icon: Component) {
     return () => {
@@ -346,15 +346,15 @@ function renderSortIcon(icon: Component) {
 }
 
 const drawerVisible = ref(false)
-const drawerData = ref<Solution | null>(null)
-const showDrawer = function (solution: Solution) {
-    drawerData.value = solution
+const drawerData = ref<Operation | null>(null)
+const showDrawer = function (operation: Operation) {
+    drawerData.value = operation
     drawerVisible.value = true
 }
 
 onMounted(async () => {
-    const { solutionList } = await useSolutionList(1, query.pageSize)
-    tableData.value = solutionList
+    const { operationList } = await useOperationList(1, query.pageSize)
+    tableData.value = operationList
 
     friendlyLinks.value = [
         { url: 'http://', title: '链接1' },
@@ -363,12 +363,12 @@ onMounted(async () => {
     ]
 })
 
-async function useSolutionList(page: number, ...args: any[]) {
+async function useOperationList(page: number, ...args: any[]) {
     loading.value = true
-    const solutionListInfo = (await getSolutionList(page, ...args)).data
-    console.log(solutionListInfo)
-    const solutionList = solutionListInfo?.data || []
-    solutionList.forEach((s: Solution) => {
+    const operationListInfo = (await getOperationList(page, ...args)).data
+    console.log(operationListInfo)
+    const operationList = operationListInfo?.data || []
+    operationList.forEach((s: Operation) => {
         s.content = JSON.parse(s.content as unknown as string)
         // for(const key in s.content){
         //     s[key] = s.content[key];
@@ -376,8 +376,8 @@ async function useSolutionList(page: number, ...args: any[]) {
     })
     loading.value = false
     return {
-        solutionList,
-        solutionListInfo,
+        operationList,
+        operationListInfo,
     }
 }
 </script>

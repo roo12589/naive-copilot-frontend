@@ -2,7 +2,7 @@
 // import useSWR from 'swr'
 // import useSWRInfinite from 'swr/infinite'
 
-import { Response, solutionListInfo } from '@/types'
+import { Response, operationListInfo } from '@/types'
 import type { Operation, OperationListItem, PaginatedResponse } from '@/models/operation'
 
 import { parseShortCode, shortCodeScheme } from '../models/shortCode'
@@ -18,7 +18,7 @@ export interface UseOperationsParams {
     byMyself?: boolean
     suspense?: boolean
 }
-export function getSolutionList(
+export function getOperationList(
     page: number,
     limit = 50,
     order_by: OrderBy = 'hot',
@@ -26,7 +26,7 @@ export function getSolutionList(
     document?: string,
     level_keyword?: string,
     operator?: string
-): Promise<Response<solutionListInfo>> {
+): Promise<Response<operationListInfo>> {
     let url: string = `/copilot/query?desc=${desc}&limit=${limit}&page=${page}&order_by=${order_by}`
     if (document) url += `&document=${document}`
     if (level_keyword) url += `&level_keyword=${level_keyword}`

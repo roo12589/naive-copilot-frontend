@@ -5,7 +5,7 @@
                 <div class="flex justify-between">
                     <div class="text">{{ title }}</div>
                     <n-space class="button">
-                        <n-button text quaternary type="primary" size="medium" @click="downloadSolution">下载</n-button>
+                        <n-button text quaternary type="primary" size="medium" @click="downloadOperation">下载</n-button>
                         <n-button text type="primary" size="medium" @click="copyCode">复制</n-button>
                     </n-space>
                 </div>
@@ -17,13 +17,12 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import StepCard from '@/components/StepCard/index.vue'
 import { copyText, exportJson } from '@/utils'
 
 const show = ref(true)
 const title = '标题'
 const action = ref({ name: 'a', direction: 'up', location: [1, 2] })
-const downloadSolution = () => {
+const downloadOperation = () => {
     exportJson('name', JSON.stringify({ name: 'a' }))
 }
 const copyCode = () => {
