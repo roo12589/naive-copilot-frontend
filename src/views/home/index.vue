@@ -142,11 +142,41 @@
         </n-layout-sider>
     </n-layout>
     <n-drawer v-model:show="drawerVisible" width="1000" placement="right" class="drawer">
-        <n-drawer-content title="title" closable>
+        <n-drawer-content>
+            <template #header>
+                <div class="flex justify-between">
+                    <div>{{ drawerData?.content.doc.title }}</div>
+                    <n-space align="center" v-if="drawerData">
+                        <n-button
+                            text
+                            type="primary"
+                            size="medium"
+                            @click="() => {
+                            exportJson(drawerData!.content.doc.title||'error', JSON.stringify(drawerData!.content))
+                        }"
+                        >
+                            下载JSON
+                        </n-button>
+                        <n-button
+                            type="primary"
+                            size="medium"
+                            @click="
+                                () => {
+                                    copyText(`maa://${drawerData?.id}`)
+                                }
+                            "
+                        >
+                            复制代码
+                        </n-button>
+                    </n-space>
+                </div>
+            </template>
             <div v-if="drawerData">
                 <div class="flex">
-                    <div class="w-2/4 h-full px-2 box-border flex flex-col justify-start items-start whitespace-pre-line text-left">
-                        <p class="m-0 font-bold text-[18px]">{{ drawerData.content.doc.title }}</p>
+                    <div
+                        class="w-2/4 h-full px-2 box-border flex flex-col justify-start items-start whitespace-pre-line text-left"
+                    >
+                        <!-- <p class="m-0 font-bold text-[18px]">{{ drawerData.content.doc.title }}</p> -->
                         <div>
                             <n-tag type="default" size="medium">
                                 <b>{{ drawerData.content.stage_name }}</b>
@@ -179,31 +209,40 @@
                                 {{ drawerData.uploader }}
                             </div>
                         </div>
-                        <div class="flex flex-col justify-start items-start">
-                            <b>操作员</b>
-                            <div class="w-full flex justify-start flex-wrap">
-                                <n-tag
-                                    class="m-1"
-                                    type="default"
-                                    size="medium"
+                        <div class="flex flex-wrap justify-start items-start">
+                            <!-- <div class="w-full flex justify-start flex-wrap"> -->
+                            <div>
+                                <b>干员</b>
+                                <div
+                                    class="m-1 flex justify-start items-center"
                                     v-for="operator in drawerData.content.opers"
                                 >
-                                    op skill{{ operator.skill }}
-                                </n-tag>
+                                    <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
+                                    {{ operator.name }}
+                                    <div class="ml-auto">
+                                        <span class="m-1 text-gray-400">技能</span>
+                                        <b>{{ operator.skill }}</b>
+                                    </div>
+                                </div>
                             </div>
+                            <div v-for="group in drawerData.content.groups">
+                                <b>{{ group.name }}</b>
+                                <div class="m-1 flex justify-start items-center" v-for="operator in group.opers">
+                                    <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
+                                    {{ operator.name }}
+                                    <div class="ml-auto">
+                                        <span class="m-1 text-gray-400">技能</span>
+                                        <b>{{ operator.skill }}</b>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- </div> -->
                         </div>
                     </div>
                 </div>
                 <n-divider />
-                <div class="w-full flex justify-start flex-wrap">
-                    <div class="operator-item" v-for="operator in drawerData.content.opers">
-                        <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
-                        {{ operator.name }}
-                        技能
-                        <b>{{ operator.skill }}</b>
-                    </div>
-                </div>
-                <div class="steps">
+
+                <div>
                     <ActionCard mark v-for="(action, index) in drawerData.content.actions" :action="(action as any)">
                         <template #mark>{{ index }}</template>
                     </ActionCard>
@@ -218,7 +257,7 @@
 import { ref, reactive, onMounted, Component, h } from 'vue'
 import { OPERATORS } from '@/models/generated/operators'
 import OperationCard from './OperationCard.vue'
-import ActionCard from "./ActionCard.vue"
+import ActionCard from './ActionCard.vue'
 import { NIcon, SelectOption } from 'naive-ui'
 import {
     AddCircleOutline,
@@ -234,6 +273,7 @@ import {
 import { Link, Operation } from '@/types'
 import { getOperationList } from '@/apis/operation'
 import { columns } from './constant'
+import { copyText, exportJson } from '@/utils'
 
 const query = reactive({
     pageSize: 3,
@@ -277,7 +317,7 @@ const renderTagExclude = ({ option, handleClose }) => {
     )
 }
 
-const tab = ref('multiple')
+const tab = ref<'single' | 'multiple'>('single')
 
 const tableData = ref<Operation[]>([])
 
@@ -353,8 +393,12 @@ const showDrawer = function (operation: Operation) {
 }
 
 onMounted(async () => {
-    const { operationList } = await useOperationList(1, query.pageSize)
-    tableData.value = operationList
+    if (tab.value === 'multiple') {
+        const { operationList } = await useOperationList(1, query.pageSize)
+        tableData.value = operationList
+    } else {
+        handleSort('hot')
+    }
 
     friendlyLinks.value = [
         { url: 'http://', title: '链接1' },
@@ -381,3 +425,8 @@ async function useOperationList(page: number, ...args: any[]) {
     }
 }
 </script>
+<style scoped>
+:deep(.n-drawer-header__main) {
+    width: 100%;
+}
+</style>

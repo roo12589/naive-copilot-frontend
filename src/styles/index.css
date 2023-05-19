@@ -1,5 +1,10 @@
 @import './tailwind.css';
 
+/* fix tailwind hack */
+button {
+    background:none;
+}
+
 a.primary-link {
     color: #8a2be2;
     margin: 0 5px;

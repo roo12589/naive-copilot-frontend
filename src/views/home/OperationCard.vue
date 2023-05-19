@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="flex flex-col justify-start items-start">
-                <b>操作员</b>
+                <b>干员/干员组</b>
                 <div class="w-full flex justify-start flex-wrap">
                     <n-tag class="m-1" type="default" size="medium" v-for="operator in operation.content.opers">
                         op skill{{ operator.skill }}

@@ -1,5 +1,5 @@
 <template>
-    <div class="p-3 my-2 relative border border-[rgb(239,239,245)] rounded-lg transition-all">
+    <div class="p-3 my-2 relative border border-solid border-[rgb(239,239,245)] rounded-lg transition-all">
         <div class="flex justify-center items-center px-1 left-0 top-0 min-w-[0.25rem] bg-white translate-x-[5px] translate-y-[-50%] origin-top-left text-gray-400" v-if="mark">
             <slot name="mark"></slot>
         </div>
@@ -45,7 +45,7 @@ const props = withDefaults(
         mark: false,
     }
 )
-console.log(props)
+// console.log(props)
 const type = findActionType(props.action.type)
 const getIcon = (s: string) => {
     const map = new Map([
