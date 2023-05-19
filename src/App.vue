@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import AppProvider from '@/components/appProvider/index.vue'
-import Header from '@/components/Header/index.vue'
+import Header from '@/components/header/index.vue'
 import useTheme from './hooks/useTheme'
 import { onMounted } from 'vue'
 const { theme, toggleTheme } = useTheme()
