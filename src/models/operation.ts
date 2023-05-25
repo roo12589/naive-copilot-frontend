@@ -1,3 +1,5 @@
+import { CopilotDocV1 } from "./copilot.schema"
+
 export interface PaginatedResponse<T> {
   hasNext: boolean
   page: number
@@ -18,6 +20,10 @@ export interface Operation {
   ratingType: OpRatingType
   notEnoughRating: boolean
   difficulty: OpDifficulty
+  commentsCount: number
+}
+export interface OperationCombined extends Omit<Operation,'content'> {
+    content:CopilotDocV1.Operation
 }
 
 export interface Level {

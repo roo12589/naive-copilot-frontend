@@ -26,7 +26,7 @@ export function getOperationList(
     document?: string,
     level_keyword?: string,
     operator?: string
-): Promise<Response<operationListInfo>> {
+): Promise<Response<PaginatedResponse<Operation>>> {
     let url: string = `/copilot/query?desc=${desc}&limit=${limit}&page=${page}&order_by=${order_by}`
     if (document) url += `&document=${document}`
     if (level_keyword) url += `&level_keyword=${level_keyword}`

@@ -179,7 +179,7 @@
                         <!-- <p class="m-0 font-bold text-[18px]">{{ drawerData.content.doc.title }}</p> -->
                         <div>
                             <n-tag type="default" size="medium">
-                                <b>{{ drawerData.content.stage_name }}</b>
+                                <b>{{ drawerData.content.stageName }}</b>
                             </n-tag>
                         </div>
                         {{ drawerData.content.doc.details }}
@@ -190,7 +190,7 @@
                                 <!-- <n-icon><StarSharp /></n-icon> -->
                                 <n-rate
                                     allow-half
-                                    :default-value="(drawerData.rating_level || 0) / 2"
+                                    :default-value="(drawerData.ratingLevel || 0) / 2"
                                     readonly
                                     size="small"
                                 />
@@ -199,7 +199,7 @@
                                 {{ drawerData.views }}&nbsp;&nbsp;
                                 <n-icon><TimeOutline /></n-icon>
                                 <n-time
-                                    :time="new Date(drawerData.upload_time).getTime()"
+                                    :time="new Date(drawerData.uploadTime).getTime()"
                                     :to="Date.now()"
                                     type="relative"
                                 />
@@ -278,10 +278,12 @@ import {
     ListSharp,
     FlameOutline,
 } from '@vicons/ionicons5'
-import { Link, Operation } from '@/types'
+import { Link } from '@/types'
+import type { OperationCombined as Operation, PaginatedResponse, Operation as _Operation } from '@/models/operation'
 import { getOperationList } from '@/apis/operation'
 import { columns } from './constant'
 import { copyText, exportJson } from '@/utils'
+import camelcaseKeys from 'camelcase-keys'
 
 const query = reactive({
     pageSize: 3,
@@ -415,22 +417,31 @@ onMounted(async () => {
     ]
 })
 
-async function useOperationList(page: number, ...args: any[]) {
+async function useOperationList(
+    page: number,
+    ...args: any[]
+): Promise<{
+    operationList: Operation[]
+    operationListInfo: PaginatedResponse<_Operation>
+}> {
     loading.value = true
     const operationListInfo = (await getOperationList(page, ...args)).data
-    console.log(operationListInfo)
-    const operationList = operationListInfo?.data || []
-    operationList.forEach((s: Operation) => {
-        s.content = JSON.parse(s.content as unknown as string)
-        // for(const key in s.content){
-        //     s[key] = s.content[key];
-        // }
-    })
+    const operationList =
+        operationListInfo?.data.map((o) => {
+            o.content = JSON.parse(o.content)
+            return o
+        }) || []
+
     loading.value = false
-    return {
-        operationList,
-        operationListInfo,
-    }
+    const transformed = camelcaseKeys(
+        {
+            operationList,
+            operationListInfo,
+        } as any,
+        { deep: true }
+    )
+    console.log(transformed)
+    return transformed
 }
 </script>
 <style scoped>

@@ -1,4 +1,4 @@
-import { Operation } from '@/types'
+import { OperationCombined } from '@/models/operation'
 import { copyText } from '@/utils'
 import { DataTableColumn, NButton, NTime } from 'naive-ui'
 type DataTableColumn2<T> = DataTableColumn<T> & {
@@ -10,7 +10,7 @@ type User = {
     sex: string
 }
 
-const _columns: DataTableColumn2<Operation>[] = [
+const _columns: DataTableColumn2<OperationCombined>[] = [
     {
         key: 'content',
         title: 'content',
@@ -19,10 +19,10 @@ const _columns: DataTableColumn2<Operation>[] = [
         hidden: true,
     },
     {
-        key: 'stage_name',
-        title: 'stage_name',
+        key: 'stageName',
+        title: 'stageName',
         render: (row) => {
-            return row.content.stage_name
+            return row.content.stageName
         },
     },
     {
@@ -32,7 +32,7 @@ const _columns: DataTableColumn2<Operation>[] = [
             const operators = row.content.opers
             return (
                 <span>
-                    {operators.map((o) => o.name + o.skill).toString()} 共<b>{operators.length}</b>
+                    {operators?.map((o) => o.name + o.skill).toString()} 共<b>{operators?.length}</b>
                 </span>
             )
         },
@@ -55,9 +55,9 @@ const _columns: DataTableColumn2<Operation>[] = [
     },
 
     {
-        key: 'upload_time',
-        title: 'upload_time',
-        render: ({ upload_time }) => <NTime time={0} to={new Date(upload_time)} type="relative" />,
+        key: 'uploadTime',
+        title: 'uploadTime',
+        render: ({ uploadTime }) => <NTime time={0} to={new Date(uploadTime)} type="relative" />,
     },
     {
         key: 'uploader',
@@ -68,8 +68,8 @@ const _columns: DataTableColumn2<Operation>[] = [
         title: 'views',
     },
     {
-        key: 'hot_score',
-        title: 'hot_score',
+        key: 'hotScore',
+        title: 'hotScore',
     },
     {
         key: 'available',
@@ -77,20 +77,20 @@ const _columns: DataTableColumn2<Operation>[] = [
         hidden: true,
     },
     {
-        key: 'rating_level',
-        title: 'rating_level',
+        key: 'ratingLevel',
+        title: 'ratingLevel',
     },
     {
-        key: 'rating_ratio',
-        title: 'rating_ratio',
+        key: 'ratingRatio',
+        title: 'ratingRatio',
     },
     {
-        key: 'rating_type',
-        title: 'rating_type',
+        key: 'ratingType',
+        title: 'ratingType',
     },
     {
-        key: 'not_enough_rating',
-        title: 'not_enough_rating',
+        key: 'notEnoughRating',
+        title: 'notEnoughRating',
         hidden: true,
     },
     {

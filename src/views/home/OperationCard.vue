@@ -6,7 +6,7 @@
             <p class="m-0 font-bold text-[18px]">{{ operation.content.doc.title }}</p>
             <div>
                 <n-tag type="default" size="medium">
-                    <b>{{ operation.content.stage_name }}</b>
+                    <b>{{ operation.content.stageName }}</b>
                 </n-tag>
             </div>
             {{ operation.content.doc.details }}
@@ -15,13 +15,13 @@
             <div class="flex flex-col items-end h-20">
                 <div class="flex justify-center items-center">
                     <!-- <n-icon><StarSharp /></n-icon> -->
-                    {{ getRateText(operation.rating_level / 2) }}
-                    <n-rate allow-half :default-value="operation.rating_level / 2" readonly size="small" />
+                    {{ getRateText(operation.ratingLevel / 2) }}
+                    <n-rate allow-half :default-value="operation.ratingLevel / 2" readonly size="small" />
                     &nbsp;&nbsp;
                     <n-icon><EyeOutline /></n-icon>
                     {{ operation.views }}&nbsp;&nbsp;
                     <n-icon><TimeOutline /></n-icon>
-                    <n-time :time="new Date(operation.upload_time).getTime()" :to="Date.now()" type="relative" />
+                    <n-time :time="new Date(operation.uploadTime).getTime()" :to="Date.now()" type="relative" />
                 </div>
                 <div class="flex justify-center items-center">
                     <n-icon><PersonCircleOutline /></n-icon>
@@ -63,7 +63,7 @@
 
 <script lang="ts" setup>
 import { OPERATORS } from '@/models/generated/operators'
-import { Operation } from '@/types'
+import { OperationCombined as Operation } from '@/models/operation'
 import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
 
 defineProps<{ operation: Operation }>()
