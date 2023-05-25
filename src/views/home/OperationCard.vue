@@ -1,6 +1,6 @@
 <template>
     <div
-        class="cursor-pointer my-2 flex border border-[rgb(239,239,245)] rounded-lg p-6 transition-all hover:shadow-md"
+        class="cursor-pointer my-2 flex border border-solid border-[rgb(239,239,245)] rounded-lg p-6 transition-all hover:shadow-md"
     >
         <div class="w-2/4 h-full px-2 box-border flex flex-col justify-start items-start whitespace-pre-line text-left">
             <p class="m-0 font-bold text-[18px]">{{ operation.content.doc.title }}</p>
@@ -28,23 +28,50 @@
                     {{ operation.uploader }}
                 </div>
             </div>
-            <div class="flex flex-col justify-start items-start">
-                <b>干员/干员组</b>
-                <div class="w-full flex justify-start flex-wrap">
-                    <n-tag class="m-1" type="default" size="medium" v-for="operator in operation.content.opers">
-                        op skill{{ operator.skill }}
-                    </n-tag>
-                </div>
-            </div>
+            <div class="flex flex-wrap justify-start items-start">
+                            <!-- <div class="w-full flex justify-start flex-wrap"> -->
+                            <div>
+                                <b>干员</b>
+                                <div
+                                    class="m-1 flex justify-start items-center"
+                                    v-for="operator in operation.content.opers"
+                                >
+                                    <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
+                                    {{ operator.name }}
+                                    <div class="ml-auto">
+                                        <span class="m-1 text-gray-400">技能</span>
+                                        <b>{{ operator.skill }}</b>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-for="group in operation.content.groups">
+                                <b>{{ group.name }}</b>
+                                <div class="m-1 flex justify-start items-center" v-for="operator in group.opers">
+                                    <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
+                                    {{ operator.name }}
+                                    <div class="ml-auto">
+                                        <span class="m-1 text-gray-400">技能</span>
+                                        <b>{{ operator.skill }}</b>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- </div> -->
+                        </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
+import { OPERATORS } from '@/models/generated/operators'
 import { Operation } from '@/types'
 import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
 
 defineProps<{ operation: Operation }>()
+
+const getOperatorAvatarUrl = (name: string) => {
+    const id = OPERATORS.find((operator) => operator.name === name)?.id
+    return 'https://prts.plus/assets/operator-avatars/' + id + '.png'
+}
 
 function getRateText(score: number) {
     if (score <= 0) return '🙄没人评价'

@@ -243,9 +243,17 @@
                 <n-divider />
 
                 <div>
-                    <ActionCard mark v-for="(action, index) in drawerData.content.actions" :action="(action as any)">
-                        <template #mark>{{ index }}</template>
-                    </ActionCard>
+                    <n-collapse>
+                        <n-collapse-item title="动作序列" name="1">
+                            <ActionCard
+                                mark
+                                v-for="(action, index) in drawerData.content.actions"
+                                :action="(action as any)"
+                            >
+                                <template #mark>{{ index }}</template>
+                            </ActionCard>
+                        </n-collapse-item>
+                    </n-collapse>
                 </div>
             </div>
             <n-empty v-else description="暂无数据" />
