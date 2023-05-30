@@ -9,7 +9,7 @@
                     <b>{{ operation.content.stageName }}</b>
                 </n-tag>
             </div>
-            {{ operation.content.doc.details }}
+            <article v-html="renderArticle(operation.content.doc.details || '')" />
         </div>
         <div class="w-2/4 h-full px-2 box-border flex flex-col">
             <div class="flex flex-col items-end h-20">
@@ -28,35 +28,29 @@
                     {{ operation.uploader }}
                 </div>
             </div>
-            <div class="flex flex-wrap justify-start items-start">
-                            <!-- <div class="w-full flex justify-start flex-wrap"> -->
-                            <div>
-                                <b>干员</b>
-                                <div
-                                    class="m-1 flex justify-start items-center"
-                                    v-for="operator in operation.content.opers"
-                                >
-                                    <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
-                                    {{ operator.name }}
-                                    <div class="ml-auto">
-                                        <span class="m-1 text-gray-400">技能</span>
-                                        <b>{{ operator.skill }}</b>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-for="group in operation.content.groups">
-                                <b>{{ group.name }}</b>
-                                <div class="m-1 flex justify-start items-center" v-for="operator in group.opers">
-                                    <n-avatar size="medium" :src="getOperatorAvatarUrl(operator.name)"></n-avatar>
-                                    {{ operator.name }}
-                                    <div class="ml-auto">
-                                        <span class="m-1 text-gray-400">技能</span>
-                                        <b>{{ operator.skill }}</b>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- </div> -->
-                        </div>
+            <div class="flex flex-col justify-start items-start">
+                <!-- <div class="w-full flex justify-start flex-wrap"> -->
+                <p class="m-0"><b>干员</b></p>
+                <div class="w-full flex">
+                    <n-tag
+                        class="m-1 flex flex-col justify-center items-center"
+                        v-for="operator in operation.content.opers"
+                    >
+                        {{ operator.name }} {{ operator.skill }}
+                    </n-tag>
+                </div>
+                <div v-for="group in operation.content.groups">
+                    <p class="m-0">
+                        <b>{{ group.name }}</b>
+                    </p>
+                    <div class="w-full flex">
+                        <n-tag class="m-1 flex flex-col justify-center items-center" v-for="operator in group.opers">
+                            {{ operator.name }} {{ operator.skill }}
+                        </n-tag>
+                    </div>
+                </div>
+                <!-- </div> -->
+            </div>
         </div>
     </div>
 </template>
@@ -68,9 +62,13 @@ import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
 
 defineProps<{ operation: Operation }>()
 
-const getOperatorAvatarUrl = (name: string) => {
-    const id = OPERATORS.find((operator) => operator.name === name)?.id
-    return 'https://prts.plus/assets/operator-avatars/' + id + '.png'
+const renderArticle = (details: string) => {
+    const httpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/[AaBb][Vv][a-zA-Z0-9]+/gi
+    const BVReg = /[AaBb][Vv][a-zA-Z0-9]+/gi
+    let res
+    if (httpReg.test(details)) {res = details.replace(httpReg, `<a href='$&' onclick="event.stopPropagation()">$&</a>`)}
+    else if (BVReg.test(details)) {res = details.replace(BVReg, `<a href='https://www.bilibili.com/video/$&' onclick="event.stopPropagation()">$&</a>`)}
+    return res
 }
 
 function getRateText(score: number) {

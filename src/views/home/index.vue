@@ -112,7 +112,12 @@
             :collapsed-width="0"
             :native-scrollbar="true"
         >
-            <n-icon size="20" class="z-50 cursor-pointer transition-all" :style="{transform:`translate(-25px,280px) rotate(${collapsed ? 180 : 0}deg)`}" @click="switchCollapsed">
+            <n-icon
+                size="20"
+                class="z-50 cursor-pointer transition-all"
+                :style="{ transform: `translate(-25px,280px) rotate(${collapsed ? 180 : 0}deg)` }"
+                @click="switchCollapsed"
+            >
                 <BasketballOutline />
             </n-icon>
             <n-card size="medium">
@@ -187,7 +192,7 @@
                                 <b>{{ drawerData.content.stageName }}</b>
                             </n-tag>
                         </div>
-                        {{ drawerData.content.doc.details }}
+                        <article v-html="renderArticle(drawerData.content.doc.details || '')" />
                     </div>
                     <div class="w-2/4 h-full px-2 box-border flex flex-col">
                         <div class="flex flex-col items-end h-20">
@@ -304,12 +309,10 @@ import { useCommentList } from '@/apis/comment'
 const collapsed = ref(false)
 const switchCollapsed = () => {
     collapsed.value = !collapsed.value
-    
-
 }
 
 const query = reactive({
-    pageSize: 3,
+    pageSize: 5,
     documentWord: '',
     multipleDocumentWord: '',
     levelWord: '',
@@ -326,6 +329,15 @@ const operatorOptions = OPERATORS.map((operator: any) => {
 const getOperatorAvatarUrl = (name: string) => {
     const id = OPERATORS.find((operator) => operator.name === name)?.id
     return 'https://prts.plus/assets/operator-avatars/' + id + '.png'
+}
+
+const renderArticle = (details: string) => {
+    const httpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/[AaBb][Vv][a-zA-Z0-9]+/gi
+    const BVReg = /[AaBb][Vv][a-zA-Z0-9]+/gi
+    let res
+    if (httpReg.test(details)) {res = details.replace(httpReg, `<a href='$&' onclick="event.stopPropagation()">$&</a>`)}
+    else if (BVReg.test(details)) {res = details.replace(BVReg, `<a href='https://www.bilibili.com/video/$&' onclick="event.stopPropagation()">$&</a>`)}
+    return res
 }
 
 const renderLabel = (option: SelectOption) => {
