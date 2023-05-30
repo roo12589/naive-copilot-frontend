@@ -88,6 +88,7 @@
                             <n-empty v-if="!loading && operations.length === 0" description="暂无数据"></n-empty>
                             <OperationCard
                                 v-for="operation in operations"
+                                :key="operation.id"
                                 :operation="operation"
                                 @click="showDrawer(operation)"
                             />
@@ -102,14 +103,18 @@
             </n-tabs>
         </n-layout-content>
         <n-layout-sider
-            content-style="padding:0 1.5rem;"
-            show-trigger="bar"
-            collapse-mode="width"
+            content-style="padding:0 2rem;position:fixed;z-index:999;"
+            :show-trigger="false"
+            :collapsed="collapsed"
+            collapse-mode="transform"
             width="300"
-            :default-collapsed="true"
-            :collapsed-width="10"
+            :default-collapsed="collapsed"
+            :collapsed-width="0"
             :native-scrollbar="true"
         >
+            <n-icon size="20" class="z-50 cursor-pointer transition-all" :style="{transform:`translate(-25px,280px) rotate(${collapsed ? 180 : 0}deg)`}" @click="switchCollapsed">
+                <BasketballOutline />
+            </n-icon>
             <n-card size="medium">
                 <template #header>
                     <div class="flex justify-start items-center">
@@ -280,7 +285,7 @@ import {
     AddCircleOutline,
     InformationCircleOutline,
     BookmarksOutline,
-    StarSharp,
+    BasketballOutline,
     EyeOutline,
     TimeOutline,
     PersonCircleOutline,
@@ -296,6 +301,13 @@ import { copyText, exportJson } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
 import { useCommentList } from '@/apis/comment'
 
+const collapsed = ref(false)
+const switchCollapsed = () => {
+    collapsed.value = !collapsed.value
+    
+
+}
+
 const query = reactive({
     pageSize: 3,
     documentWord: '',
@@ -310,6 +322,7 @@ const operatorOptions = OPERATORS.map((operator: any) => {
     operator.value = operator.name
     return operator
 })
+
 const getOperatorAvatarUrl = (name: string) => {
     const id = OPERATORS.find((operator) => operator.name === name)?.id
     return 'https://prts.plus/assets/operator-avatars/' + id + '.png'
