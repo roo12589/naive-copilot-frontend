@@ -5,11 +5,14 @@
                 <div class="flex justify-between">
                     <div class="text">{{ title }}</div>
                     <n-space class="button">
-                        <n-button text quaternary type="primary" size="medium" @click="downloadOperation">下载</n-button>
+                        <n-button text quaternary type="primary" size="medium" @click="downloadOperation">
+                            下载
+                        </n-button>
                         <n-button text type="primary" size="medium" @click="copyCode">复制</n-button>
                     </n-space>
                 </div>
             </template>
+            <n-button :loading="loading" text type="primary" size="medium" @click="getComment">测试</n-button>
             <step-card :title="title" :action="action"></step-card>
         </n-drawer-content>
     </n-drawer>
@@ -18,6 +21,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { copyText, exportJson } from '@/utils'
+import { useLoadingState } from '@/hooks/useLoadingState'
+import { useCommentList } from '@/apis/comment'
 
 const show = ref(true)
 const title = '标题'
@@ -28,6 +33,13 @@ const downloadOperation = () => {
 const copyCode = () => {
     copyText('text')
 }
+
+const { loading, fn: getComment } = useLoadingState(() => useCommentList('23460',2,5,'hot'), {
+    loading: false,
+    onSuccess: (res) => {
+        console.log(res)
+    },
+} as any)
 </script>
 
 <style scoped>

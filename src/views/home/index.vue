@@ -255,6 +255,14 @@
                         </n-collapse-item>
                     </n-collapse>
                 </div>
+                <n-divider />
+                <div>
+                    <n-collapse :default-expanded-names="['1']">
+                        <n-collapse-item title="评论区" name="1">
+                            <CommentCard mark v-for="comment in commentList" :comment="comment" />
+                        </n-collapse-item>
+                    </n-collapse>
+                </div>
             </div>
             <n-empty v-else description="暂无数据" />
         </n-drawer-content>
@@ -266,6 +274,7 @@ import { ref, reactive, onMounted, Component, h } from 'vue'
 import { OPERATORS } from '@/models/generated/operators'
 import OperationCard from './OperationCard.vue'
 import ActionCard from './ActionCard.vue'
+import CommentCard from './CommentCard.vue'
 import { NIcon, SelectOption } from 'naive-ui'
 import {
     AddCircleOutline,
@@ -280,10 +289,12 @@ import {
 } from '@vicons/ionicons5'
 import { Link } from '@/types'
 import type { OperationCombined as Operation, PaginatedResponse, Operation as _Operation } from '@/models/operation'
+import type { MainCommentInfo } from '@/models/comment'
 import { getOperationList } from '@/apis/operation'
 import { columns } from './constant'
 import { copyText, exportJson } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
+import { useCommentList } from '@/apis/comment'
 
 const query = reactive({
     pageSize: 3,
@@ -397,10 +408,14 @@ function renderSortIcon(icon: Component) {
 
 const drawerVisible = ref(false)
 const drawerData = ref<Operation | null>(null)
-const showDrawer = function (operation: Operation) {
+const showDrawer = async function (operation: Operation) {
     drawerData.value = operation
+    const { commentList: c } = await useCommentList(operation.id)
+    commentList.value = c
     drawerVisible.value = true
 }
+
+const commentList = ref<MainCommentInfo[]>([])
 
 onMounted(async () => {
     if (tab.value === 'multiple') {
