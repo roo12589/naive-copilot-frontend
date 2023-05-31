@@ -269,7 +269,11 @@
                 <div>
                     <n-collapse :default-expanded-names="['1']">
                         <n-collapse-item title="评论区" name="1">
-                            <CommentCard mark v-for="comment in commentList" :comment="comment" />
+                            <CommentCard
+                                :author="drawerData.uploader"
+                                v-for="comment in commentList"
+                                :comment="comment"
+                            />
                         </n-collapse-item>
                     </n-collapse>
                 </div>
@@ -312,7 +316,7 @@ const switchCollapsed = () => {
 }
 
 const query = reactive({
-    pageSize: 5,
+    pageSize: 10,
     documentWord: '',
     multipleDocumentWord: '',
     levelWord: '',
@@ -335,8 +339,14 @@ const renderArticle = (details: string) => {
     const httpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/[AaBb][Vv][a-zA-Z0-9]+/gi
     const BVReg = /[AaBb][Vv][a-zA-Z0-9]+/gi
     let res
-    if (httpReg.test(details)) {res = details.replace(httpReg, `<a href='$&' onclick="event.stopPropagation()">$&</a>`)}
-    else if (BVReg.test(details)) {res = details.replace(BVReg, `<a href='https://www.bilibili.com/video/$&' onclick="event.stopPropagation()">$&</a>`)}
+    if (httpReg.test(details)) {
+        res = details.replace(httpReg, `<a href='$&' onclick="event.stopPropagation()">$&</a>`)
+    } else if (BVReg.test(details)) {
+        res = details.replace(
+            BVReg,
+            `<a href='https://www.bilibili.com/video/$&' onclick="event.stopPropagation()">$&</a>`
+        )
+    }
     return res
 }
 

@@ -2,13 +2,13 @@
     <div class="w-full px-4 py-3 m-3 box-border border border-solid border-[rgb(199,199,203)] rounded-lg">
         <div>
             <span class="flex items-center gap-1 font-medium sm:text-base">
-                <div class="w-8 h-6" :style="{ backgroundColor: stringToRGB(comment.uploader) }">
+                <n-tag :color="{ color: stringToRGB(comment.uploader), borderColor: 'transparent' }">
                     <span :style="{ color: isLightColor(stringToRGB(comment.uploader)) ? 'black' : 'white' }">
-                        {{ comment.uploader.slice(0,2) }}
+                        {{ comment.uploader }}
                     </span>
-                </div>
-                {{ comment.uploader }}
-                <!-- &middot; -->
+                </n-tag>
+                <n-tag v-if="isAuthor(comment.uploader)" type="primary">作者</n-tag>
+
                 <n-time
                     class="text-xs text-gray-500"
                     :time="new Date(comment.uploadTime).getTime()"
@@ -47,13 +47,16 @@
         >
             <div>
                 <span class="flex items-center gap-1 font-medium sm:text-base">
-                    <div class="w-8 h-6" :style="{ backgroundColor: stringToRGB(subComment.uploader) }">
-                        <span :style="{ color: isLightColor(stringToRGB(subComment.uploader)) ? 'black' : 'white' }">
-                            {{ subComment.uploader.slice(0,2) }}
-                        </span>
-                    </div>
-                    {{ subComment.uploader }}
-                    <!-- &middot; -->
+                    <n-tag
+                        :color="{
+                            textColor: stringToRGB(subComment.uploader),
+                            borderColor: stringToRGB(subComment.uploader),
+                        }"
+                    >
+                        {{ subComment.uploader }}
+                    </n-tag>
+                    <n-tag v-if="isAuthor(subComment.uploader)" type="primary">作者</n-tag>
+
                     <n-time
                         class="text-xs text-gray-500"
                         :time="new Date(subComment.uploadTime).getTime()"
@@ -63,6 +66,16 @@
                 </span>
 
                 <p class="line-clamp-2 text-sm text-gray-700">
+                    <n-tag
+                        :bordered="false"
+                        v-if="getReplyToName(subComment.fromCommentId, comment.subCommentsInfos)"
+                        :color="{
+                            color: 'transparent',
+                            textColor: stringToRGB(getReplyToName(subComment.fromCommentId, comment.subCommentsInfos)),
+                        }"
+                    >
+                        {{ '@' + getReplyToName(subComment.fromCommentId, comment.subCommentsInfos) + ':' }}
+                    </n-tag>
                     {{ subComment.message }}
                 </p>
 
@@ -83,8 +96,12 @@
 </template>
 
 <script lang="ts" setup>
-import { MainCommentInfo } from '@/models/comment'
+import { MainCommentInfo, SubCommentInfo } from '@/models/comment'
 import { ChatboxEllipsesOutline, CaretUp, CaretDown } from '@vicons/ionicons5'
 import { stringToRGB, isLightColor } from '@/utils'
-defineProps<{ comment: MainCommentInfo }>()
+const { author } = defineProps<{ comment: MainCommentInfo; author?: string }>()
+
+const getReplyToName = (commentId: string, subComments: SubCommentInfo[]) =>
+    subComments.find((subComment) => subComment.commentId === commentId)?.uploader
+const isAuthor = (name: string) => name === author
 </script>
