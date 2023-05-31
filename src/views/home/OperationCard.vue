@@ -31,7 +31,7 @@
             <div class="flex flex-col justify-start items-start">
                 <!-- <div class="w-full flex justify-start flex-wrap"> -->
                 <p class="m-0"><b>干员</b></p>
-                <div class="w-full flex">
+                <div class="w-full flex flex-wrap">
                     <n-tag
                         class="m-1 flex flex-col justify-center items-center"
                         v-for="operator in operation.content.opers"
@@ -43,7 +43,7 @@
                     <p class="m-0">
                         <b>{{ group.name }}</b>
                     </p>
-                    <div class="w-full flex">
+                    <div class="w-full flex flex-wrap">
                         <n-tag class="m-1 flex flex-col justify-center items-center" v-for="operator in group.opers">
                             {{ operator.name }} {{ operator.skill }}
                         </n-tag>
@@ -66,8 +66,14 @@ const renderArticle = (details: string) => {
     const httpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/[AaBb][Vv][a-zA-Z0-9]+/gi
     const BVReg = /[AaBb][Vv][a-zA-Z0-9]+/gi
     let res
-    if (httpReg.test(details)) {res = details.replace(httpReg, `<a href='$&' onclick="event.stopPropagation()">$&</a>`)}
-    else if (BVReg.test(details)) {res = details.replace(BVReg, `<a href='https://www.bilibili.com/video/$&' onclick="event.stopPropagation()">$&</a>`)}
+    if (httpReg.test(details)) {
+        res = details.replace(httpReg, `<a href='$&' onclick="event.stopPropagation()">$&</a>`)
+    } else if (BVReg.test(details)) {
+        res = details.replace(
+            BVReg,
+            `<a href='https://www.bilibili.com/video/$&' onclick="event.stopPropagation()">$&</a>`
+        )
+    }
     return res
 }
 
