@@ -63,16 +63,25 @@ import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
 defineProps<{ operation: Operation }>()
 
 const renderArticle = (details: string) => {
-    const httpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/[AaBb][Vv][a-zA-Z0-9]+/gi
+    const biliHttpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/([AaBb][Vv][a-zA-Z0-9]+)([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
     const BVReg = /[AaBb][Vv][a-zA-Z0-9]+/gi
-    let res
-    if (httpReg.test(details)) {
-        res = details.replace(httpReg, `<a href='$&' onclick="event.stopPropagation()">$&</a>`)
-    } else if (BVReg.test(details)) {
-        res = details.replace(
-            BVReg,
-            `<a href='https://www.bilibili.com/video/$&' onclick="event.stopPropagation()">$&</a>`
+    const imgHttpReg =
+        /((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?\.(png|jpg|jpeg|gif)/gi
+    const httpReg = /((ht|f)tps?):\/\/[\w\-]+(\.(?!bilibili)[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
+    let res = details
+
+    if (biliHttpReg.test(res)) {
+        res = res.replace(biliHttpReg, `<a href="$&" onclick="event.stopPropagation()">$1</a>`)
+    } else if (BVReg.test(res)) {
+        res = res.replace(BVReg, `<a href="https://www.bilibili.com/video/$&" onclick="event.stopPropagation()">$&</a>`)
+    }
+    if (imgHttpReg.test(res)) {
+        res = res.replace(
+            imgHttpReg,
+            `<a href="$&" onclick="event.stopPropagation()"><img style="width:100%;" src="$&" alt="如图片加载失败，请尝试点击前往" /></a>`
         )
+    } else if (httpReg.test(res)) {
+        res = res.replace(httpReg, `<a href="$&" onclick="event.stopPropagation()">$&</a>`)
     }
     return res
 }
