@@ -1,7 +1,7 @@
 <template>
     <n-page-header class="py-4">
         <template #title>
-            <a href="https://anyway.fm/" class="no-underline">Anyway.FM</a>
+            <a href="https://prts.plus/" class="no-underline" title="点击前往官方">Naive Copilot&nbsp;<span class="text-xs text-gray-500">Copied</span></a>
         </template>
         <template #subtitle>
             <n-divider vertical />
@@ -10,9 +10,7 @@
             <n-button quaternary type="primary" size="medium" @click=""><router-link to="/test">test</router-link></n-button>
         </template>
 
-        <template #avatar>
-            <n-avatar src="https://cdnimg103.lizhi.fm/user/2017/02/04/2583325032200238082_160x160.jpg" />
-        </template>
+
         <template #extra>
             <n-space>
                 <n-button>打开登录</n-button>
