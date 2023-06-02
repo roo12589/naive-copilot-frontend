@@ -284,7 +284,7 @@
 </template>
 
 <script lang="tsx" setup>
-import { ref, reactive, onMounted, Component, h } from 'vue'
+import { ref, reactive, onMounted, Component, h, computed } from 'vue'
 import { OPERATORS } from '@/models/generated/operators'
 import OperationCard from './OperationCard.vue'
 import ActionCard from './ActionCard.vue'
@@ -304,7 +304,7 @@ import {
 import { Link } from '@/types'
 import type { OperationCombined as Operation, PaginatedResponse, Operation as _Operation } from '@/models/operation'
 import type { MainCommentInfo } from '@/models/comment'
-import { getOperationList } from '@/apis/operation'
+import { OrderBy, getOperationList } from '@/apis/operation'
 import { columns } from './constant'
 import { copyText, exportJson } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
@@ -323,6 +323,9 @@ const query = reactive({
     operatorInclude: [],
     operatorExclude: [],
 })
+const operatorWord = computed(
+    () => query.operatorInclude.toString() + query.operatorExclude.map((s) => '~' + s).toString()
+)
 
 const operatorOptions = OPERATORS.map((operator: any) => {
     operator.label = operator.name
@@ -336,7 +339,8 @@ const getOperatorAvatarUrl = (name: string) => {
 }
 
 const renderArticle = (details: string) => {
-    const biliHttpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/([AaBb][Vv][a-zA-Z0-9]+)([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
+    const biliHttpReg =
+        /https?:\/\/(?:www\.)?bilibili\.com\/video\/([AaBb][Vv][a-zA-Z0-9]+)([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
     const BVReg = /[AaBb][Vv][a-zA-Z0-9]+/gi
     const imgHttpReg =
         /((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?\.(png|jpg|jpeg|gif)/gi
@@ -390,7 +394,6 @@ async function handleSearch() {
     tab.value === 'single' ? await handleSingleSearch() : await handleMultipleSearch()
 }
 async function handleSingleSearch() {
-    const operatorWord = query.operatorInclude.toString() + query.operatorExclude.map((s) => '~' + s).toString()
     const { operationList } = await useOperationList(
         1,
         query.pageSize,
@@ -398,7 +401,7 @@ async function handleSingleSearch() {
         true,
         query.documentWord,
         query.levelWord,
-        operatorWord
+        operatorWord.value
     )
     operations.value = operationList
 }
@@ -407,8 +410,7 @@ async function handleMultipleSearch() {
     const result: Operation[] = []
     const words = query.multipleDocumentWord.split(',')
     for (const word of words) {
-        const operatorWord = query.operatorInclude.toString() + query.operatorExclude.map((s) => '~' + s).toString()
-        const { operationList } = await useOperationList(1, 3, 'hot', true, word, query.levelWord, operatorWord)
+        const { operationList } = await useOperationList(1, 3, 'hot', true, word, query.levelWord, operatorWord.value)
         operationList[0] && result.push(operationList[0])
     }
     console.log(result)
@@ -438,8 +440,16 @@ const sortOptions = [
         icon: renderSortIcon(EyeOutline),
     },
 ]
-async function handleSort(key: string) {
-    const { operationList } = await useOperationList(1, query.pageSize, key)
+async function handleSort(key: OrderBy) {
+    const { operationList } = await useOperationList(
+        1,
+        query.pageSize,
+        key,
+        true,
+        query.documentWord,
+        query.levelWord,
+        operatorWord.value
+    )
     operations.value = operationList
 }
 function renderSortIcon(icon: Component) {
@@ -478,7 +488,14 @@ onMounted(async () => {
 
 async function useOperationList(
     page: number,
-    ...args: any[]
+    ...args: [
+        limit?: number,
+        order_by?: OrderBy,
+        desc?: boolean,
+        document?: string,
+        level_keyword?: string,
+        operator?: string
+    ]
 ): Promise<{
     operationList: Operation[]
     operationListInfo: PaginatedResponse<_Operation>
