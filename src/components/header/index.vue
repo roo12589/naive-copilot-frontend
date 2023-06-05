@@ -18,9 +18,10 @@
         </template>
 
         <template #extra>
-            <n-space>
+            <div class="flex items-center gap-3">
+                <slot name="right"></slot>
                 <n-button @click="showModal = true">登录/注册</n-button>
-            </n-space>
+            </div>
         </template>
     </n-page-header>
     <n-modal v-model:show="showModal" :style="bodyStyle" size="huge" :bordered="false" preset="card">
