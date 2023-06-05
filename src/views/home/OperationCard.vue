@@ -6,7 +6,7 @@
             <p class="m-0 font-bold text-[18px]">{{ operation.content.doc.title }}</p>
             <div>
                 <n-tag type="default" size="medium">
-                    <b>{{ operation.content.stageName }}</b>
+                    <b>{{ arknightsStore.levels.find(level => level.stageId === operation.content.stageName)?.name || (operation.content.stageName) }}</b>
                 </n-tag>
             </div>
             <article v-html="renderArticle(operation.content.doc.details || '')" />
@@ -58,9 +58,12 @@
 <script lang="ts" setup>
 import { OPERATORS } from '@/models/generated/operators'
 import { OperationCombined as Operation } from '@/models/operation'
+import { useArknights } from '@/store/arknights'
 import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
 
 defineProps<{ operation: Operation }>()
+
+const arknightsStore = useArknights()
 
 const renderArticle = (details: string) => {
     const biliHttpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/([AaBb][Vv][a-zA-Z0-9]+)([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi

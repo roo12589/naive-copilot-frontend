@@ -31,13 +31,17 @@
                         <CaretDown />
                     </n-icon>
                     &nbsp;&nbsp;
-                    <span class="flex gap-1 items-center" v-if="comment.subCommentsInfos.length > 0">
+                    <span v-if="comment.subCommentsInfos.length > 0" class="flex gap-1 items-center">
                         <n-icon size="16">
                             <ChatboxEllipsesOutline />
                         </n-icon>
                         {{ comment.subCommentsInfos.length }}
                     </span>
-                    <span @click="collapsed = !collapsed" class="flex justify-center items-center cursor-pointer">
+                    <span
+                        v-if="comment.subCommentsInfos.length > 0"
+                        @click="collapsed = !collapsed"
+                        class="flex justify-center items-center cursor-pointer"
+                    >
                         <n-icon
                             :style="{
                                 transform: collapsed ? 'rotate(0deg)' : 'rotate(-180deg)',

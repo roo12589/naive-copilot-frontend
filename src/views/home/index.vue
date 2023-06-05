@@ -189,7 +189,7 @@
                         <!-- <p class="m-0 font-bold text-[18px]">{{ drawerData.content.doc.title }}</p> -->
                         <div>
                             <n-tag type="default" size="medium">
-                                <b>{{ drawerData.content.stageName }}</b>
+                                <b>{{ arknightsStore.levels.find(level => level.stageId === drawerData!.content.stageName)?.name || (drawerData.content.stageName) }}</b>
                             </n-tag>
                         </div>
                         <article v-html="renderArticle(drawerData.content.doc.details || '')" />
@@ -309,6 +309,12 @@ import { columns } from './constant'
 import { copyText, exportJson } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
 import { useCommentList } from '@/apis/comment'
+import { useLevel } from '@/apis/arknights'
+import { useArknights } from '@/store/arknights'
+
+const arknightsStore = useArknights()
+
+arknightsStore.initLevels()
 
 const collapsed = ref(false)
 const switchCollapsed = () => {
@@ -472,6 +478,7 @@ const showDrawer = async function (operation: Operation) {
 const commentList = ref<MainCommentInfo[]>([])
 
 onMounted(async () => {
+
     if (tab.value === 'multiple') {
         const { operationList } = await useOperationList(1, query.pageSize)
         tableData.value = operationList
