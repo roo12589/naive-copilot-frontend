@@ -115,7 +115,7 @@
             <n-icon
                 size="20"
                 class="z-50 cursor-pointer transition-all"
-                :style="{ transform: `translate(-25px,280px) rotate(${collapsed ? 180 : 0}deg)` }"
+                :style="{ transform: `translate(-25px,calc(50vh - 76px)) rotate(${collapsed ? 180 : 0}deg)` }"
                 @click="switchCollapsed"
             >
                 <BasketballOutline />
@@ -189,7 +189,9 @@
                         <!-- <p class="m-0 font-bold text-[18px]">{{ drawerData.content.doc.title }}</p> -->
                         <div>
                             <n-tag type="default" size="medium">
-                                <b>{{ arknightsStore.levels.find(level => level.stageId === drawerData!.content.stageName)?.name || (drawerData.content.stageName) }}</b>
+                                <b>
+                                    {{ arknightsStore.levels.find(level => level.stageId === drawerData!.content.stageName)?.name || (drawerData.content.stageName) }}
+                                </b>
                             </n-tag>
                         </div>
                         <article v-html="renderArticle(drawerData.content.doc.details || '')" />
@@ -316,9 +318,10 @@ const arknightsStore = useArknights()
 
 arknightsStore.initLevels()
 
-const collapsed = ref(false)
+const collapsed = ref(Boolean(localStorage.getItem('aside-collapsed')))
 const switchCollapsed = () => {
     collapsed.value = !collapsed.value
+    localStorage.setItem('aside-collapsed', '' + collapsed.value)
 }
 
 const query = reactive({
@@ -478,7 +481,6 @@ const showDrawer = async function (operation: Operation) {
 const commentList = ref<MainCommentInfo[]>([])
 
 onMounted(async () => {
-
     if (tab.value === 'multiple') {
         const { operationList } = await useOperationList(1, query.pageSize)
         tableData.value = operationList
