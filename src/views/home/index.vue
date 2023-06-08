@@ -281,6 +281,17 @@
                 </div>
             </div>
             <n-empty v-else description="暂无数据" />
+            <template #footer>
+                <n-input type="textarea" v-model:value="commentText" :autosize="{ minRows: 2, maxRows: 6 }" />
+                <n-button
+                    class="absolute right-8 bottom-6"
+                    type="primary"
+                    @click="onAddComment"
+                    :disabled="!commentText"
+                >
+                    发送
+                </n-button>
+            </template>
         </n-drawer-content>
     </n-drawer>
 </template>
@@ -310,11 +321,12 @@ import { OrderBy, getOperationList } from '@/apis/operation'
 import { columns } from './constant'
 import { copyText, exportJson } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
-import { useCommentList } from '@/apis/comment'
+import { addComment, useCommentList } from '@/apis/comment'
 import { useLevel } from '@/apis/arknights'
-import { useArknights } from '@/store/arknights'
+import { useArknightsStore } from '@/store/arknights'
+import { login } from '@/apis/auth'
 
-const arknightsStore = useArknights()
+const arknightsStore = useArknightsStore()
 
 arknightsStore.initLevels()
 
@@ -322,6 +334,17 @@ const collapsed = ref(Boolean(localStorage.getItem('aside-collapsed')))
 const switchCollapsed = () => {
     collapsed.value = !collapsed.value
     localStorage.setItem('aside-collapsed', '' + collapsed.value)
+}
+
+const commentText = ref('')
+const onAddComment = async () => {
+    try {
+        await addComment(commentText.value, drawerData.value!.id)
+        window.$message.success('评论成功')
+    } catch (error: any) {
+        console.error(error.message || error.cause || error)
+        window.$message.error(error.message || '评论失败')
+    }
 }
 
 const query = reactive({

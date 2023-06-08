@@ -1,9 +1,17 @@
+import { useUserStore } from '@/store/user'
 import type { InternalAxiosRequestConfig } from 'axios'
 export default [
-    (config: InternalAxiosRequestConfig) => {
-        // config.headers['X-Requested-With'] = 'XMLHttpRequest' // setup xhr flag
-        // config.withCredentials = true
-        // fingerprint(config)
+    async (config: InternalAxiosRequestConfig) => {
+        const userStore = useUserStore()
+
+        if (new Date() > new Date(userStore.userCredentials.validBefore)) {
+            // console.log(new Date() > new Date(userStore.userCredentials.validBefore));
+            throw new Error('refresh_token失效', { cause: { message: 'refresh_token_expired', code: 1001 } })
+        }
+        const token = userStore.userCredentials.token || localStorage.getItem('token')
+        config.headers['Authorization'] = `Bearer ${token}`
+        // 时间过期
+
         return config
     },
     (error: any) => {

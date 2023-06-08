@@ -20,7 +20,25 @@
         <template #extra>
             <div class="flex items-center gap-3">
                 <slot name="right"></slot>
-                <n-button @click="showModal = true">登录/注册</n-button>
+                <n-dropdown trigger="hover" :options="userDropdownOptions" v-if="isLogin" class="cursor-pointer">
+                    <n-tag
+                        :color="{
+                            color: stringToRGB(userStore.userCredentials.userInfo.userName),
+                            borderColor: 'transparent',
+                        }"
+                    >
+                        <span
+                            :style="{
+                                color: isLightColor(stringToRGB(userStore.userCredentials.userInfo.userName))
+                                    ? 'black'
+                                    : 'white',
+                            }"
+                        >
+                            {{ userStore.userCredentials.userInfo.userName }}
+                        </span>
+                    </n-tag>
+                </n-dropdown>
+                <n-button v-else @click="showModal = true">登录/注册</n-button>
             </div>
         </template>
     </n-page-header>
@@ -49,7 +67,13 @@
                     </n-form-item>
                     <n-row :gutter="[0, 24]">
                         <n-col :span="24" class="flex justify-center">
-                            <n-button type="primary">登录</n-button>
+                            <n-button
+                                :loading="loginLoading"
+                                @click="() => loginWithLoading(loginModel.email, loginModel.password)"
+                                type="primary"
+                            >
+                                登录
+                            </n-button>
                         </n-col>
                     </n-row>
                 </n-form>
@@ -96,9 +120,34 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { FormInst, FormItemInst, FormItemRule, useMessage, FormRules } from 'naive-ui'
+import { useUserStore } from '@/store/user'
+import { login } from '@/apis/auth'
+import { useLoadingState } from '@/hooks/useLoadingState'
+import { DropdownMixedOption } from 'naive-ui/es/dropdown/src/interface'
+import { stringToRGB, isLightColor } from '@/utils'
 
+const userStore = useUserStore()
+const isLogin = computed(() => Boolean(userStore.userCredentials.token))
+
+const { loading: loginLoading, fn: loginWithLoading } = useLoadingState(login, {
+    onSuccess: () => (showModal.value = false),
+})
+
+const userDropdownOptions: DropdownMixedOption[] = [
+    {
+        label: '退出登录',
+        key: '退出登录',
+        props: {
+            onClick: () => {
+                userStore.removeUserCredentials()
+                localStorage.setItem('token', '')
+                localStorage.removeItem('userCredentials')
+            },
+        },
+    },
+]
 const options = []
 const bodyStyle = { width: '500px' },
     showModal = ref(false)
@@ -208,6 +257,18 @@ const handlePasswordInput = () => {
         rPasswordFormItem.value?.validate({ trigger: 'password-input' })
     }
 }
+onMounted(() => {
+    loginModel.value = {
+        email: 'asdad@qq.com',
+        password: 'MaaAssistant',
+    }
+    if (!userStore.userCredentials.token) {
+        const userCredentials = localStorage.getItem('userCredentials')
+        if (userCredentials) {
+            userStore.setUserCredentials(JSON.parse(userCredentials))
+        }
+    }
+})
 </script>
 
 <style scoped lang="scss">

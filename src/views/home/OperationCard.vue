@@ -58,12 +58,12 @@
 <script lang="ts" setup>
 import { OPERATORS } from '@/models/generated/operators'
 import { OperationCombined as Operation } from '@/models/operation'
-import { useArknights } from '@/store/arknights'
+import { useArknightsStore } from '@/store/arknights'
 import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
 
 defineProps<{ operation: Operation }>()
 
-const arknightsStore = useArknights()
+const arknightsStore = useArknightsStore()
 
 const renderArticle = (details: string) => {
     const biliHttpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/([AaBb][Vv][a-zA-Z0-9]+)([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi

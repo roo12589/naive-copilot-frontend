@@ -21,7 +21,6 @@ onMounted(() => {
     window.$loadingBar.start()
     setTimeout(() => {
         window.$loadingBar.finish()
-        window.$message.success('加载完成，Perfect~')
     }, 500)
 })
 </script>

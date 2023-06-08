@@ -8,9 +8,6 @@ const [responseResolve, responseReject] = res
 const api = axios.create({
     baseURL: import.meta.env.VITE_BASE_API,
     timeout: 10 * 1000,
-    headers: {
-        token: localStorage.getItem('token') || '',
-    },
 })
 
 api.interceptors.request.use(requestResolve, requestReject)
@@ -19,23 +16,23 @@ api.interceptors.response.use(responseResolve, responseReject)
 const CancelToken = axios.CancelToken
 export function useCancelToken(fetcher) {
     let abort
-  
+
     function send(data, config) {
-      cancel() // 主动取消
-  
-      const cancelToken = new CancelToken(cancel => (abort = cancel))
-      return fetcher(data, { ...config, cancelToken })
+        cancel() // 主动取消
+
+        const cancelToken = new CancelToken((cancel) => (abort = cancel))
+        return fetcher(data, { ...config, cancelToken })
     }
-  
+
     function cancel(message = 'abort') {
-      if (abort) {
-        abort(message)
-        abort = null
-      }
+        if (abort) {
+            abort(message)
+            abort = null
+        }
     }
-  
+
     return [send, cancel]
-  }
+}
 /* 使用
 
 function getUser(id: string, config?: AxiosRequestConfig) {
