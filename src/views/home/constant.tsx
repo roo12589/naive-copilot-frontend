@@ -57,7 +57,7 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
     {
         key: 'uploadTime',
         title: 'uploadTime',
-        render: ({ uploadTime }) => <NTime time={0} to={new Date(uploadTime)} type="relative" />,
+        render: ({ uploadTime }) => <NTime time={new Date(uploadTime)} to={new Date()} type="relative" />,
     },
     {
         key: 'uploader',
