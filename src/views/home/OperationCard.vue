@@ -4,11 +4,13 @@
     >
         <div class="w-2/4 h-full px-2 box-border flex flex-col justify-start items-start whitespace-pre-line text-left">
             <p class="m-0 font-bold text-[18px]">{{ operation.content.doc.title }}</p>
-            <div>
+            <n-space align="center">
                 <n-tag type="default" size="medium">
-                    <b>{{ arknightsStore.levels.find(level => level.stageId === operation.content.stageName)?.name || (operation.content.stageName) }}</b>
+                    <b>{{ level?.catThree || operation.content.stageName }}</b>
+                    {{ level?.catOne }}
                 </n-tag>
-            </div>
+                <n-tag type="default" size="small">{{ level?.name }}</n-tag>
+            </n-space>
             <article v-html="renderArticle(operation.content.doc.details || '')" />
         </div>
         <div class="w-2/4 h-full px-2 box-border flex flex-col">
@@ -60,13 +62,17 @@ import { OPERATORS } from '@/models/generated/operators'
 import { OperationCombined as Operation } from '@/models/operation'
 import { useArknightsStore } from '@/store/arknights'
 import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
+import { computed } from 'vue'
 
-defineProps<{ operation: Operation }>()
+const { operation } = defineProps<{ operation: Operation }>()
 
 const arknightsStore = useArknightsStore()
 
+const level = computed(() => arknightsStore.levels.find((level) => level.stageId === operation.content.stageName))
+
 const renderArticle = (details: string) => {
-    const biliHttpReg = /https?:\/\/(?:www\.)?bilibili\.com\/video\/([AaBb][Vv][a-zA-Z0-9]+)([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
+    const biliHttpReg =
+        /https?:\/\/(?:www\.)?bilibili\.com\/video\/([AaBb][Vv][a-zA-Z0-9]+)([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
     const BVReg = /[AaBb][Vv][a-zA-Z0-9]+/gi
     const imgHttpReg =
         /((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?\.(png|jpg|jpeg|gif)/gi

@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </n-card>
-            <n-tabs v-model:value="tab" type="line" size="medium">
+            <n-tabs v-model:value="tab" @update:value="onTabChange" type="line" size="medium">
                 <n-tab-pane name="single" tab="精确查询">
                     <div>
                         <n-dropdown
@@ -302,7 +302,7 @@ import { OPERATORS } from '@/models/generated/operators'
 import OperationCard from './OperationCard.vue'
 import ActionCard from './ActionCard.vue'
 import CommentCard from './CommentCard.vue'
-import { NIcon, SelectOption } from 'naive-ui'
+import { NButton, NIcon, SelectOption } from 'naive-ui'
 import {
     AddCircleOutline,
     InformationCircleOutline,
@@ -315,10 +315,15 @@ import {
     FlameOutline,
 } from '@vicons/ionicons5'
 import { Link } from '@/types'
-import type { OperationCombined as Operation, PaginatedResponse, Operation as _Operation } from '@/models/operation'
+import type {
+    OperationCombined as Operation,
+    OperationCombined,
+    PaginatedResponse,
+    Operation as _Operation,
+} from '@/models/operation'
 import type { MainCommentInfo } from '@/models/comment'
 import { OrderBy, getOperationList } from '@/apis/operation'
-import { columns } from './constant'
+import { DataTableColumn2, columns as _columns } from './constant'
 import { copyText, exportJson } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
 import { addComment, useCommentList } from '@/apis/comment'
@@ -327,8 +332,28 @@ import { useArknightsStore } from '@/store/arknights'
 import { login } from '@/apis/auth'
 
 const arknightsStore = useArknightsStore()
-
 arknightsStore.initLevels()
+
+const columns: DataTableColumn2<OperationCombined>[] = [
+    ..._columns,
+    {
+        key: 'operation',
+        title: '操作',
+        width: 130,
+        fixed: 'right',
+        render: (row: OperationCombined) => (
+            <>
+                <NButton type="primary" size="small" onClick={() => copyText('maa://' + row.id)}>
+                    复制
+                </NButton>
+                &nbsp;
+                <NButton size="small" onClick={() => showDrawer(row)}>
+                    详情
+                </NButton>
+            </>
+        ),
+    },
+]
 
 const collapsed = ref(Boolean(localStorage.getItem('aside-collapsed')))
 const switchCollapsed = () => {
@@ -418,8 +443,11 @@ const renderTagExclude = ({ option, handleClose }) => {
     )
 }
 
-const tab = ref<'single' | 'multiple'>('single')
-
+const tab = ref<'single' | 'multiple'>('multiple')
+const onTabChange = (tab: string) => {
+    console.log(tab)
+    handleSearch()
+}
 const tableData = ref<Operation[]>([])
 
 async function handleSearch() {
