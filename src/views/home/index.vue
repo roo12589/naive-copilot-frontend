@@ -381,7 +381,7 @@ const query = reactive({
     operatorExclude: [],
 })
 const operatorWord = computed(
-    () => query.operatorInclude.toString() + query.operatorExclude.map((s) => '~' + s).toString()
+    () => query.operatorInclude.toString() +','+ query.operatorExclude.map((s) => '~' + s).toString()
 )
 
 const operatorOptions = OPERATORS.map((operator: any) => {
