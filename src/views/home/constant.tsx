@@ -4,11 +4,6 @@ import { DataTableColumn, NButton, NTime } from 'naive-ui'
 type DataTableColumn2<T> = DataTableColumn<T> & {
     hidden?: boolean
 }
-type User = {
-    name: string
-    age: number
-    sex: string
-}
 
 const _columns: DataTableColumn2<OperationCombined>[] = [
     {
