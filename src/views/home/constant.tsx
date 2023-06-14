@@ -1,3 +1,4 @@
+import { useReplaceComponent } from '@/hooks/useReplaceComponent'
 import { OperationCombined } from '@/models/operation'
 import { useArknightsStore } from '@/store/arknights'
 import { copyText } from '@/utils'
@@ -54,7 +55,13 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
         key: 'title',
         title: '标题',
         render: (row) => {
-            return row.content.doc.title
+            return (
+                <>
+                    {useReplaceComponent(row.content.doc.title, /(蚀刻章?)/, (capture) => (
+                        <span class="text-[#8A2BE2]">{capture}</span>
+                    ))}
+                </>
+            )
         },
     },
     {
