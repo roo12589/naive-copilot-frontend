@@ -57,9 +57,12 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
         render: (row) => {
             return (
                 <>
-                    {useReplaceComponent(row.content.doc.title, /(蚀刻章?)/, (capture) => (
-                        <span class="text-[#8A2BE2]">{capture}</span>
-                    ))}
+                    {useReplaceComponent(row.content.doc.title, [
+                        {
+                            reg: /蚀刻章?/,
+                            component: (capture) => <span class="text-[#8A2BE2]">{capture}</span>,
+                        },
+                    ])}
                 </>
             )
         },

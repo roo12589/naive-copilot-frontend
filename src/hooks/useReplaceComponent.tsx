@@ -1,30 +1,44 @@
-/**
- *
- * @param text
- * @param reg 需要用括号包裹才能正确识别
- * @param component 用于替换的组件或返回组件的函数
- * @returns 返回已将命中字段替换为组件的数组
- * @todo 问题： 1. 正则必须用括号捕获组包裹
- *             2. 正则不能使用g修饰符
- *             3. 不能用于重复替换
- *             4. 返回数组 渲染需要用<></>包裹
- */
-export const useReplaceComponent = (
-    text: string,
-    reg: RegExp,
+interface Replacer {
+    reg: RegExp | string
     component: JSX.Element | ((capture: string) => JSX.Element)
-) => {
-    const parts = text.split(reg)
-    const replacedArr = parts.map((part) => {
-        console.log(part.match(reg))
+}
+/**
+ * 将字符串替换为指定jsx组件，返回拼接成的数组
+ * 需要注意的是：不能包含捕获组！！前后规则顺序可能互相冲突！
+ * @param {string} text - 要处理的输入字符串。
+ * @param {Replacer[]} replacers - 包含替换规则的对象数组，需要注意规则的前后顺序可能冲突！！
+ * @return {(string | JSX.Element)[]} 返回字符串和已被替换JSX元素拼接成数组
+ */
+export const useReplaceComponent = (text: string, replacers: Replacer[]) => {
+    let parts: (string | JSX.Element)[] = [text]
+    for (const replacer of replacers) {
+        let { reg } = replacer
+        parts = parts
+            .map((p) => {
+                if (typeof p === 'string' && p.match(reg)) {
+                    return replaceComponent(p, replacer)
+                }
+                return p as JSX.Element
+            })
+            .flat()
+    }
+    return parts
+}
 
-        if (part.match(reg)) {
-            if (typeof component === 'function' && part.match(reg)?.length === 2) return component(part.match(reg)![1])
+const replaceComponent = (text: string, replacer: Replacer) => {
+    let { reg, component } = replacer
+    reg = convertToRegExpWithBrackets(reg)
+    const parts = text.split(reg)
+    return parts.map((part) => {
+        if (part?.match(reg)) {
+            if (typeof component === 'function' && part.match(reg)!.length >= 2) return component(part.match(reg)![1])
 
             return component as JSX.Element
         } else {
             return part
         }
     })
-    return replacedArr
 }
+
+const convertToRegExpWithBrackets = (reg: string | RegExp) =>
+    typeof reg === 'string' ? new RegExp(`(${reg})`) : (reg = new RegExp(`(${reg.source})`, reg.flags))
