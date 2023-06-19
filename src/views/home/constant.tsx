@@ -1,12 +1,14 @@
 import { useReplaceComponent } from '@/hooks/useReplaceComponent'
 import { OperationCombined } from '@/models/operation'
 import { useArknightsStore } from '@/store/arknights'
+import { useSettingStore } from '@/store/setting'
 import { copyText } from '@/utils'
 import { DataTableColumn, NButton, NTag, NTime } from 'naive-ui'
 export type DataTableColumn2<T> = DataTableColumn<T> & {
     hidden?: boolean
 }
 const arknightsStore = useArknightsStore()
+const settingStore = useSettingStore()
 
 const _columns: DataTableColumn2<OperationCombined>[] = [
     {
@@ -55,16 +57,20 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
         key: 'title',
         title: '标题',
         render: (row) => {
-            return (
-                <>
-                    {useReplaceComponent(row.content.doc.title, [
-                        {
-                            reg: /蚀刻章?/,
-                            component: (capture) => <span class="text-[#8A2BE2]">{capture}</span>,
-                        },
-                    ])}
-                </>
-            )
+            const { highlight } = settingStore.setting
+            const { enable } = highlight
+            if (enable === false) return <>{row.content.doc.title}</>
+            const rules =
+                highlight.aspect
+                    ?.find((a) => a.title === 'title')
+                    ?.rules.filter((r) => r.enable !== false)
+                    .map((r) => ({
+                        reg: r.source,
+                        component:(c)=> <span style={{ color: r.color || '#8A2BE2' }}>{c}</span>,
+                    })) || []
+
+            const replaced = useReplaceComponent(row.content.doc.title, rules)
+            return <>{replaced}</>
         },
     },
     {
