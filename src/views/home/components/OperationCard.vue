@@ -64,7 +64,7 @@ import { useArknightsStore } from '@/store/arknights'
 import { useSettingStore } from '@/store/setting'
 import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
 import { computed } from 'vue'
-import { RenderArticle } from './render'
+import { RenderArticle } from '../render'
 
 const { operation } = defineProps<{ operation: Operation }>()
 

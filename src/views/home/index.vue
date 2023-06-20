@@ -300,9 +300,9 @@
 <script lang="tsx" setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { OPERATORS } from '@/models/generated/operators'
-import OperationCard from './OperationCard.vue'
-import ActionCard from './ActionCard.vue'
-import CommentCard from './CommentCard.vue'
+import OperationCard from './components/OperationCard.vue'
+import ActionCard from './components/ActionCard.vue'
+import CommentCard from './components/CommentCard.vue'
 import { NButton, NIcon } from 'naive-ui'
 import {
     AddCircleOutline,
