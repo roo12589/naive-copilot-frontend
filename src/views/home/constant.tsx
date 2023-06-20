@@ -57,19 +57,10 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
         key: 'title',
         title: '标题',
         render: (row) => {
-            const { highlight } = settingStore.setting
-            const { enable } = highlight
-            if (enable === false) return <>{row.content.doc.title}</>
-            const rules =
-                highlight.aspect
-                    ?.find((a) => a.title === 'title')
-                    ?.rules.filter((r) => r.enable !== false)
-                    .map((r) => ({
-                        reg: r.source,
-                        component:(c)=> <span style={{ color: r.color || '#8A2BE2' }}>{c}</span>,
-                    })) || []
-
-            const replaced = useReplaceComponent(row.content.doc.title, rules)
+            const docTitle = row.content.doc.title
+            const rules = settingStore.getRules('title')
+            if (!rules) return docTitle
+            const replaced = useReplaceComponent(docTitle, rules)
             return <>{replaced}</>
         },
     },

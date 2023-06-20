@@ -16,6 +16,21 @@ export const useSettingStore = defineStore('setting', {
             this.setting = setting
             localStorage.setItem('setting', stringifyJson(setting))
         },
+        getRules(title: string) {
+            const { highlight } = this.setting
+            const { enable } = highlight
+            if (enable === false) return false
+            const rules =
+                highlight.aspect
+                    ?.find((a) => a.title === title)
+                    ?.rules.filter((r) => r.enable !== false)
+                    .map((r) => ({
+                        reg: r.source,
+                        component: (c: any) => <span style={{ color: r.color || '#8A2BE2' }}>{c}</span>,
+                    })) || []
+
+            return rules
+        },
         initSetting() {
             this.setting = parseJson(
                 localStorage.getItem('setting') ||

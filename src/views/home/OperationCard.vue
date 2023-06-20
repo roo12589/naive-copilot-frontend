@@ -3,7 +3,7 @@
         class="cursor-pointer my-2 flex border border-solid border-[rgb(239,239,245)] rounded-lg p-6 transition-all hover:shadow-md"
     >
         <div class="w-2/4 h-full px-2 box-border flex flex-col justify-start items-start whitespace-pre-line text-left">
-            <p class="m-0 font-bold text-[18px]">{{ operation.content.doc.title }}</p>
+            <p class="m-0 font-bold text-[18px]"><docTitle /></p>
             <n-space align="center">
                 <n-tag type="default" size="medium">
                     <b>{{ level?.catThree || operation.content.stageName }}</b>
@@ -57,10 +57,12 @@
     </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="tsx" setup>
+import { useReplaceComponent } from '@/hooks/useReplaceComponent'
 import { OPERATORS } from '@/models/generated/operators'
 import { OperationCombined as Operation } from '@/models/operation'
 import { useArknightsStore } from '@/store/arknights'
+import { useSettingStore } from '@/store/setting'
 import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
 import { computed } from 'vue'
 
@@ -69,6 +71,15 @@ const { operation } = defineProps<{ operation: Operation }>()
 const arknightsStore = useArknightsStore()
 
 const level = computed(() => arknightsStore.levels.find((level) => level.stageId === operation.content.stageName))
+
+const settingStore = useSettingStore()
+const docTitle = () => {
+    const t = operation.content.doc.title
+    const rules = settingStore.getRules('title')
+    if (!rules) return <>{t}</>
+    const replaced = useReplaceComponent(t, rules)
+    return <>{replaced}</>
+}
 
 const renderArticle = (details: string) => {
     const biliHttpReg =
