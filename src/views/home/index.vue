@@ -323,13 +323,15 @@ import type {
     Operation as _Operation,
 } from '@/models/operation'
 import type { MainCommentInfo } from '@/models/comment'
-import { OrderBy, getOperationList } from '@/apis/operation'
+import { OrderBy, getOperation, getOperationList } from '@/apis/operation'
 import { DataTableColumn2, columns as _columns } from './constant'
 import { copyText, exportJson } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
 import { addComment, useCommentList } from '@/apis/comment'
 import { useArknightsStore } from '@/store/arknights'
 import { RenderArticle, renderLabel, renderSortIcon, renderTagExclude, renderTagInclude } from './render'
+import router from '@/router'
+import { useRoute } from 'vue-router'
 
 const arknightsStore = useArknightsStore()
 arknightsStore.initLevels()
@@ -468,13 +470,23 @@ async function handleSort(key: OrderBy) {
 const drawerVisible = ref(false)
 const drawerData = ref<Operation | null>(null)
 const showDrawer = async function (operation: Operation) {
+    console.log('operation', operation)
+
     drawerData.value = operation
     const { commentList: c } = await useCommentList(operation.id)
     commentList.value = c
     drawerVisible.value = true
+    router.push({
+        path: '/home',
+        query: {
+            oid: operation.id,
+        },
+    })
 }
 
 const commentList = ref<MainCommentInfo[]>([])
+
+const route = useRoute()
 
 onMounted(async () => {
     if (tab.value === 'multiple') {
@@ -489,6 +501,13 @@ onMounted(async () => {
         { url: 'http://', title: '链接2' },
         { url: 'http://', title: '链接3' },
     ]
+    if (route.query?.oid) {
+        const operation = await getOperation(route.query.oid as string)
+        if (operation) {
+            await showDrawer(operation)
+            window.$message.success('已通过id打开详情页面，误关闭请刷新')
+        }
+    }
 })
 
 async function useOperationList(

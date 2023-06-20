@@ -3,10 +3,11 @@
 // import useSWRInfinite from 'swr/infinite'
 
 import { Response, operationListInfo } from '@/types'
-import type { Operation, OperationListItem, PaginatedResponse } from '@/models/operation'
+import type { Operation, OperationCombined, OperationListItem, PaginatedResponse } from '@/models/operation'
 
 import { parseShortCode, shortCodeScheme } from '../models/shortCode'
 import api from './index'
+import camelcaseKeys from 'camelcase-keys'
 
 export type OrderBy = 'views' | 'hot' | 'id'
 
@@ -32,6 +33,18 @@ export function getOperationList(
     if (level_keyword) url += `&level_keyword=${level_keyword}`
     if (operator) url += `&operator=${operator}`
     return api.get(url)
+}
+
+export const getOperation = async (id: string): Promise<OperationCombined> => {
+    try {
+        const operation = (await api.get(`/copilot/get/${id}`)).data
+        operation.content = JSON.parse(operation.content)
+
+        return camelcaseKeys(operation, { deep: true })
+    } catch (error: any) {
+        window.$message?.error(error?.message || 'getOperation error')
+        throw new Error(error?.message || 'getOperation error')
+    }
 }
 
 /* export const useOperations = ({
