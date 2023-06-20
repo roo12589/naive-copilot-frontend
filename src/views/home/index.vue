@@ -194,7 +194,8 @@
                                 </b>
                             </n-tag>
                         </div>
-                        <article v-html="renderArticle(drawerData.content.doc.details || '')" />
+                        <RenderArticle :details="drawerData.content.doc.details || ''" />
+                        <!-- <article v-html="renderArticle(drawerData.content.doc.details || '')" /> -->
                     </div>
                     <div class="w-2/4 h-full px-2 box-border flex flex-col">
                         <div class="flex flex-col items-end h-20">
@@ -297,12 +298,12 @@
 </template>
 
 <script lang="tsx" setup>
-import { ref, reactive, onMounted, Component, h, computed } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { OPERATORS } from '@/models/generated/operators'
 import OperationCard from './OperationCard.vue'
 import ActionCard from './ActionCard.vue'
 import CommentCard from './CommentCard.vue'
-import { NButton, NIcon, SelectOption } from 'naive-ui'
+import { NButton, NIcon } from 'naive-ui'
 import {
     AddCircleOutline,
     InformationCircleOutline,
@@ -327,9 +328,8 @@ import { DataTableColumn2, columns as _columns } from './constant'
 import { copyText, exportJson } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
 import { addComment, useCommentList } from '@/apis/comment'
-import { useLevel } from '@/apis/arknights'
 import { useArknightsStore } from '@/store/arknights'
-import { login } from '@/apis/auth'
+import { RenderArticle, renderLabel, renderSortIcon, renderTagExclude, renderTagInclude } from './render'
 
 const arknightsStore = useArknightsStore()
 arknightsStore.initLevels()
@@ -381,7 +381,7 @@ const query = reactive({
     operatorExclude: [],
 })
 const operatorWord = computed(
-    () => query.operatorInclude.toString() +','+ query.operatorExclude.map((s) => '~' + s).toString()
+    () => query.operatorInclude.toString() + ',' + query.operatorExclude.map((s) => '~' + s).toString()
 )
 
 const operatorOptions = OPERATORS.map((operator: any) => {
@@ -393,54 +393,6 @@ const operatorOptions = OPERATORS.map((operator: any) => {
 const getOperatorAvatarUrl = (name: string) => {
     const id = OPERATORS.find((operator) => operator.name === name)?.id
     return 'https://prts.plus/assets/operator-avatars/' + id + '.png'
-}
-
-const renderArticle = (details: string) => {
-    const biliHttpReg =
-        /https?:\/\/(?:www\.)?bilibili\.com\/video\/([AaBb][Vv][a-zA-Z0-9]+)([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
-    const BVReg = /[AaBb][Vv][a-zA-Z0-9]+/gi
-    const imgHttpReg =
-        /((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?\.(png|jpg|jpeg|gif)/gi
-    const httpReg = /((ht|f)tps?):\/\/[\w\-]+(\.(?!bilibili)[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
-    let res = details
-
-    if (biliHttpReg.test(res)) {
-        res = res.replace(biliHttpReg, `<a href="$&" onclick="event.stopPropagation()">$1</a>`)
-    } else if (BVReg.test(res)) {
-        res = res.replace(BVReg, `<a href="https://www.bilibili.com/video/$&" onclick="event.stopPropagation()">$&</a>`)
-    }
-    if (imgHttpReg.test(res)) {
-        res = res.replace(
-            imgHttpReg,
-            `<a href="$&" onclick="event.stopPropagation()"><img style="width:100%;" src="$&" alt="如图片加载失败，请尝试点击前往" /></a>`
-        )
-    } else if (httpReg.test(res)) {
-        res = res.replace(httpReg, `<a href="$&" onclick="event.stopPropagation()">$&</a>`)
-    }
-    return res
-}
-
-const renderLabel = (option: SelectOption) => {
-    return (
-        <div class="flex justify-center items-center">
-            <n-avatar size="small" src={'https://prts.plus/assets/operator-avatars/' + option.id + '.png'}></n-avatar>
-            <span>{option.label}</span>
-        </div>
-    )
-}
-const renderTagInclude = ({ option, handleClose }) => {
-    return (
-        <n-tag type="success" closable onClose={handleClose}>
-            {option.label}
-        </n-tag>
-    )
-}
-const renderTagExclude = ({ option, handleClose }) => {
-    return (
-        <n-tag type="error" closable onClose={handleClose}>
-            {option.label}
-        </n-tag>
-    )
 }
 
 const tab = ref<'single' | 'multiple'>('multiple')
@@ -511,13 +463,6 @@ async function handleSort(key: OrderBy) {
         operatorWord.value
     )
     operations.value = operationList
-}
-function renderSortIcon(icon: Component) {
-    return () => {
-        return h(NIcon, null, {
-            default: () => h(icon),
-        })
-    }
 }
 
 const drawerVisible = ref(false)

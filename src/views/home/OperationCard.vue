@@ -11,7 +11,7 @@
                 </n-tag>
                 <n-tag type="default" size="small">{{ level?.name }}</n-tag>
             </n-space>
-            <article v-html="renderArticle(operation.content.doc.details || '')" />
+            <RenderArticle :details="operation.content.doc.details || ''" />
         </div>
         <div class="w-2/4 h-full px-2 box-border flex flex-col">
             <div class="flex flex-col items-end h-20">
@@ -59,12 +59,12 @@
 
 <script lang="tsx" setup>
 import { useReplaceComponent } from '@/hooks/useReplaceComponent'
-import { OPERATORS } from '@/models/generated/operators'
 import { OperationCombined as Operation } from '@/models/operation'
 import { useArknightsStore } from '@/store/arknights'
 import { useSettingStore } from '@/store/setting'
 import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
 import { computed } from 'vue'
+import { RenderArticle } from './render'
 
 const { operation } = defineProps<{ operation: Operation }>()
 
@@ -79,31 +79,6 @@ const docTitle = () => {
     if (!rules) return <>{t}</>
     const replaced = useReplaceComponent(t, rules)
     return <>{replaced}</>
-}
-
-const renderArticle = (details: string) => {
-    const biliHttpReg =
-        /https?:\/\/(?:www\.)?bilibili\.com\/video\/([AaBb][Vv][a-zA-Z0-9]+)([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
-    const BVReg = /[AaBb][Vv][a-zA-Z0-9]+/gi
-    const imgHttpReg =
-        /((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?\.(png|jpg|jpeg|gif)/gi
-    const httpReg = /((ht|f)tps?):\/\/[\w\-]+(\.(?!bilibili)[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?/gi
-    let res = details
-
-    if (biliHttpReg.test(res)) {
-        res = res.replace(biliHttpReg, `<a href="$&" onclick="event.stopPropagation()">$1</a>`)
-    } else if (BVReg.test(res)) {
-        res = res.replace(BVReg, `<a href="https://www.bilibili.com/video/$&" onclick="event.stopPropagation()">$&</a>`)
-    }
-    if (imgHttpReg.test(res)) {
-        res = res.replace(
-            imgHttpReg,
-            `<a href="$&" onclick="event.stopPropagation()"><img style="width:100%;" src="$&" alt="如图片加载失败，请尝试点击前往" /></a>`
-        )
-    } else if (httpReg.test(res)) {
-        res = res.replace(httpReg, `<a href="$&" onclick="event.stopPropagation()">$&</a>`)
-    }
-    return res
 }
 
 function getRateText(score: number) {
