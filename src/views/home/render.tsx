@@ -1,5 +1,5 @@
 import { useReplaceComponent } from '@/hooks/useReplaceComponent'
-import { NIcon, NImage } from 'naive-ui'
+import { NAvatar, NIcon, NImage, NTag } from 'naive-ui'
 import type { SelectOption } from 'naive-ui'
 import { Component, h } from 'vue'
 
@@ -50,23 +50,23 @@ export const RenderArticle = ({ details }) => {
 export const renderLabel = (option: SelectOption) => {
     return (
         <div class="flex justify-center items-center">
-            <n-avatar size="small" src={'https://prts.plus/assets/operator-avatars/' + option.id + '.png'}></n-avatar>
+            <NAvatar size="small" src={'https://prts.plus/assets/operator-avatars/' + option.id + '.png'}></NAvatar>
             <span>{option.label}</span>
         </div>
     )
 }
 export const renderTagInclude = ({ option, handleClose }) => {
     return (
-        <n-tag type="success" closable onClose={handleClose}>
+        <NTag type="success" closable onClose={handleClose}>
             {option.label}
-        </n-tag>
+        </NTag>
     )
 }
 export const renderTagExclude = ({ option, handleClose }) => {
     return (
-        <n-tag type="error" closable onClose={handleClose}>
+        <NTag type="error" closable onClose={handleClose}>
             {option.label}
-        </n-tag>
+        </NTag>
     )
 }
 export function renderSortIcon(icon: Component) {
