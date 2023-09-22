@@ -26,6 +26,25 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
             const level = arknightsStore.levels.find((level) => level.stageId === row.content.stageName)
             return level?.catThree || row.content.stageName
         },
+        sorter: (a, b) => a.content.stageName.localeCompare(b.content.stageName),
+    },
+    {
+        key: 'difficulty',
+        title: '难度',
+        render: (row: any) => {
+            const difficulty = row.content.difficulty
+            const map = new Map([
+                [1, '普通'],
+                [2, '突袭'],
+                [3, '兼容'],
+            ])
+            const text = map.get(row.content.difficulty) || '未知'
+            return (
+                <>
+                    <NTag type={difficulty === 3 ? 'success' : 'error'}> {text}</NTag>
+                </>
+            )
+        },
     },
     {
         key: 'opers',

@@ -97,7 +97,23 @@
                 </n-tab-pane>
                 <n-tab-pane name="multiple" tab="一键查询">
                     <div class="overflow-hidden">
-                        <n-data-table :columns="columns" :data="tableData" :loading="loading" :scroll-x="1500" />
+                        <n-data-table
+                            :columns="columns"
+                            :data="tableData"
+                            :loading="loading"
+                            :scroll-x="1500"
+                            :row-props="tableProps"
+                        />
+                        <n-dropdown
+                            placement="bottom-start"
+                            trigger="manual"
+                            :x="tableDropdownX"
+                            :y="tableDropdownY"
+                            :options="tableDropdownOptions"
+                            :show="showTableDropdown"
+                            :on-clickoutside="() => (showTableDropdown = false)"
+                            @select="handleTableDropdownSelect"
+                        />
                     </div>
                 </n-tab-pane>
             </n-tabs>
@@ -298,12 +314,12 @@
 </template>
 
 <script lang="tsx" setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { OPERATORS } from '@/models/generated/operators'
 import OperationCard from './components/OperationCard.vue'
 import ActionCard from './components/ActionCard.vue'
 import CommentCard from './components/CommentCard.vue'
-import { NButton, NIcon } from 'naive-ui'
+import { DropdownOption, NButton, NIcon } from 'naive-ui'
 import {
     AddCircleOutline,
     InformationCircleOutline,
@@ -336,6 +352,37 @@ import { useRoute } from 'vue-router'
 const arknightsStore = useArknightsStore()
 arknightsStore.initLevels()
 
+const showTableDropdown = ref(false)
+const tableDropdownRow = ref<OperationCombined | null>(null)
+const tableDropdownX = ref(0)
+const tableDropdownY = ref(0)
+const tableDropdownOptions: DropdownOption[] = [
+    {
+        label: '复制',
+        key: 'copy',
+    },
+]
+const handleTableDropdownSelect = (key: 'copy' | 'detail') => {
+    if (key === 'copy') {
+        copyText(`maa://${tableDropdownRow.value?.id}`)
+        showTableDropdown.value = false
+    }
+}
+
+const tableProps = (row: OperationCombined) => {
+    return {
+        onContextmenu: (e: MouseEvent) => {
+            e.preventDefault()
+            showTableDropdown.value = false
+            tableDropdownRow.value = row
+            nextTick().then(() => {
+                showTableDropdown.value = true
+                tableDropdownX.value = e.clientX
+                tableDropdownY.value = e.clientY
+            })
+        },
+    }
+}
 const columns: DataTableColumn2<OperationCombined>[] = [
     ..._columns,
     {
