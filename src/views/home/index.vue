@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </n-card>
-            <n-tabs v-model:value="tab" @update:value="onTabChange" type="line" size="medium">
+            <n-tabs v-model:value="tab"  type="line" size="medium">
                 <n-tab-pane name="single" tab="精确查询">
                     <div>
                         <n-dropdown
@@ -445,10 +445,7 @@ const getOperatorAvatarUrl = (name: string) => {
 }
 
 const tab = ref<'single' | 'multiple'>('multiple')
-const onTabChange = (tab: string) => {
-    console.log(tab)
-    handleSearch()
-}
+
 const tableData = ref<Operation[]>([])
 
 async function handleSearch() {
@@ -536,12 +533,10 @@ const commentList = ref<MainCommentInfo[]>([])
 const route = useRoute()
 
 onMounted(async () => {
-    if (tab.value === 'multiple') {
-        const { operationList } = await useOperationList(1, query.pageSize)
-        tableData.value = operationList
-    } else {
-        handleSort('hot')
-    }
+    const { operationList } = await useOperationList(1, query.pageSize)
+
+    tableData.value = operationList
+    operations.value = operationList
 
     friendlyLinks.value = [
         { url: 'http://', title: '链接1' },
