@@ -1,6 +1,7 @@
 <template>
     <div
         class="cursor-pointer my-2 flex border border-solid border-[rgb(239,239,245)] rounded-lg p-6 transition-all hover:shadow-md"
+        @contextmenu="(e) => showDropdown(e)"
     >
         <div class="w-2/4 h-full px-2 box-border flex flex-col justify-start items-start whitespace-pre-line text-left">
             <p class="m-0 font-bold text-[18px]"><docTitle /></p>
@@ -54,17 +55,29 @@
                 <!-- </div> -->
             </div>
         </div>
+        <n-dropdown
+            placement="bottom-start"
+            trigger="manual"
+            :x="cardDropdownX"
+            :y="cardDropdownY"
+            :options="cardDropdownOptions"
+            :show="showCardDropdown"
+            :on-clickoutside="() => (showCardDropdown = false)"
+            @select="handleCardDropdownSelect"
+        />
     </div>
 </template>
 
 <script lang="tsx" setup>
 import { useReplaceComponent } from '@/hooks/useReplaceComponent'
-import { OperationCombined as Operation } from '@/models/operation'
+import { OperationCombined as Operation, OperationCombined } from '@/models/operation'
 import { useArknightsStore } from '@/store/arknights'
 import { useSettingStore } from '@/store/setting'
 import { EyeOutline, TimeOutline, PersonCircleOutline } from '@vicons/ionicons5'
-import { computed } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { RenderArticle } from '../render'
+import { copyText } from '@/utils'
+import { DropdownOption } from 'naive-ui'
 
 const { operation } = defineProps<{ operation: Operation }>()
 
@@ -87,5 +100,32 @@ function getRateText(score: number) {
     if (score > 1.5 && score <= 3.5) return '🤨有风险的'
     if (score > 3.5 && score <= 4.0) return '☺️可以抄的'
     if (score >= 4.5) return '😍几乎完美'
+}
+
+const showCardDropdown = ref(false)
+// const cardDropdownRow = ref<OperationCombined | null>(null)
+const cardDropdownX = ref(0)
+const cardDropdownY = ref(0)
+const cardDropdownOptions: DropdownOption[] = [
+    {
+        label: '复制',
+        key: 'copy',
+    },
+]
+const showDropdown = (e: MouseEvent) => {
+    e.preventDefault()
+    showCardDropdown.value = false
+    // cardDropdownRow.value = row
+    nextTick().then(() => {
+        showCardDropdown.value = true
+        cardDropdownX.value = e.clientX
+        cardDropdownY.value = e.clientY
+    })
+}
+const handleCardDropdownSelect = (key: 'copy' | 'detail') => {
+    if (key === 'copy') {
+        copyText(`maa://${operation.id}`)
+        showCardDropdown.value = false
+    }
 }
 </script>
