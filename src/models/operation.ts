@@ -21,6 +21,8 @@ export interface Operation {
   notEnoughRating: boolean
   difficulty: OpDifficulty
   commentsCount: number
+  like: number
+  dislike: number
 }
 export interface OperationCombined extends Omit<Operation,'content'> {
     content:CopilotDocV1.Operation

@@ -29,8 +29,20 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
         sorter: (a, b) => a.content.stageName.localeCompare(b.content.stageName),
     },
     {
+        key: 'title',
+        title: '标题',
+        render: (row) => {
+            const docTitle = row.content.doc.title
+            const rules = settingStore.getRules('title')
+            if (!rules) return docTitle
+            const replaced = useReplaceComponent(docTitle, rules)
+            return <>{replaced}</>
+        },
+    },
+    {
         key: 'difficulty',
         title: '难度',
+        width: 80,
         render: (row: any) => {
             const difficulty = row.content.difficulty
             const map = new Map([
@@ -73,17 +85,6 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
     },
 
     {
-        key: 'title',
-        title: '标题',
-        render: (row) => {
-            const docTitle = row.content.doc.title
-            const rules = settingStore.getRules('title')
-            if (!rules) return docTitle
-            const replaced = useReplaceComponent(docTitle, rules)
-            return <>{replaced}</>
-        },
-    },
-    {
         key: 'details',
         title: '详情',
         render: (row) => {
@@ -121,16 +122,24 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
     {
         key: 'ratingLevel',
         title: '评分',
+        width: 60,
         render: (row) => {
             if (row.notEnoughRating) return <b style={{ color: `rgba(138,43,226,0.5)` }}>评分不足</b>
             return <b style={{ color: `rgba(138,43,226,${0.5 + row.ratingLevel / 20})` }}>{row.ratingLevel}</b>
         },
     },
-
     {
-        key: 'difficulty',
-        title: 'difficulty',
-        hidden: true,
+        key: 'likeOrNot',
+        title: '赞/踩',
+        render: (row) => {
+            return (
+                <>
+                    <span style={{ color: '#18a058' }}>{row.like}</span>/
+                    <span style={{ color: '#d03050' }}>{row.dislike}</span>
+                    {/* <span>({((row.like / (row.like + row.dislike)) * 100).toFixed(2)}%)</span> */}
+                </>
+            )
+        },
     },
     // {
     //     key: 'id',

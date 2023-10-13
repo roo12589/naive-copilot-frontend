@@ -6,6 +6,22 @@
                     <div class="flex justify-start items-center">
                         <n-icon size="22"><BookmarksOutline /></n-icon>
                         查找
+                        <n-tooltip v-if="tab === 'multiple'" trigger="hover">
+                            <span>
+                                模式1：输入prefix:关卡名前缀 开始关卡索引~结束关卡索引(如prefix:cv- 1~8)
+                                <br />
+                                模式2：输入不同关卡，用,隔开(如cv-1,cv-2,cv-3)
+                            </span>
+                            <br />
+                            <span>
+                                注：格式要严格按照提示输入。
+                                <br />
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;搜索结果按照关键词匹配可能并非目标关卡。
+                            </span>
+                            <template #trigger>
+                                <n-icon size="20"><HelpCircleOutline /></n-icon>
+                            </template>
+                        </n-tooltip>
                     </div>
                 </template>
                 <div>
@@ -34,7 +50,7 @@
                         <n-input
                             v-model:value="query.multipleDocumentWord"
                             type="text"
-                            placeholder="输入关键词用','隔开"
+                            placeholder="请输入关键词"
                             size="medium"
                             clearable
                             @change="handleSearch"
@@ -69,7 +85,7 @@
                     </div>
                 </div>
             </n-card>
-            <n-tabs v-model:value="tab"  type="line" size="medium">
+            <n-tabs v-model:value="tab" type="line" size="medium">
                 <n-tab-pane name="single" tab="精确查询">
                     <div>
                         <n-dropdown
@@ -330,6 +346,7 @@ import {
     PersonCircleOutline,
     ListSharp,
     FlameOutline,
+    HelpCircleOutline,
 } from '@vicons/ionicons5'
 import { Link } from '@/types'
 import type {
@@ -465,8 +482,22 @@ async function handleSingleSearch() {
 }
 async function handleMultipleSearch() {
     console.log(query)
+    const queryWord = query.multipleDocumentWord
     const result: Operation[] = []
-    const words = query.multipleDocumentWord.split(',')
+    // 解析输入内容
+    let words: string[] = []
+    const wordType = queryWord.includes('prefix') ? 'prefix' : queryWord.includes(',') ? 'split' : 'default'
+    if (wordType === 'prefix') {
+        const prefix = queryWord.split(' ')[0].split(':')[1]
+        const [startIndex, endIndex] = queryWord.split(' ')[1].split('~')
+        for (let i = Number(startIndex); i <= Number(endIndex); i++) {
+            words.push(prefix + i)
+        }
+    } else if (wordType === 'split') {
+        words = query.multipleDocumentWord.split(',')
+    } else {
+    }
+
     for (const word of words) {
         const { operationList } = await useOperationList(1, 3, 'hot', true, word, query.levelWord, operatorWord.value)
         operationList[0] && result.push(operationList[0])
