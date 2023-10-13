@@ -17,7 +17,7 @@
                 />
             </span>
 
-            <p class="line-clamp-2 text-sm text-gray-700">
+            <p class="line-clamp-2 text-sm">
                 {{ comment.message }}
             </p>
 
@@ -84,7 +84,7 @@
                             />
                         </span>
 
-                        <p class="line-clamp-2 text-sm text-gray-700">
+                        <p class="line-clamp-2 text-sm">
                             <n-tag
                                 :bordered="false"
                                 v-if="getReplyToName(subComment.fromCommentId, comment.subCommentsInfos)"
