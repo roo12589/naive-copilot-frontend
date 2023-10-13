@@ -170,12 +170,11 @@
                     </div>
                 </template>
                 <n-list>
-                    <span>item1</span>
-                    <br />
-                    <span>item2</span>
-                    <br />
-                    <span>item3</span>
-                    <br />
+                    <n-list-item>目前只有查询作业功能能够使用，登录/注册/评论/创建作业/公告暂时不能用</n-list-item>
+
+                    <n-list-item v-for="(announcement, index) in announcementList" :key="index">
+                        {{ announcement }}
+                    </n-list-item>
                 </n-list>
             </n-card>
             <div>
@@ -510,6 +509,7 @@ async function handleMultipleSearch() {
 const loading = ref(true)
 const operations = ref<Operation[]>([])
 const friendlyLinks = ref<Link[]>([])
+const announcementList = ref<string[]>([])
 
 const sortOptions = [
     {
