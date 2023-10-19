@@ -3,7 +3,8 @@ import { OperationCombined } from '@/models/operation'
 import { useArknightsStore } from '@/store/arknights'
 import { useSettingStore } from '@/store/setting'
 import { copyText } from '@/utils'
-import { DataTableColumn, NButton, NTag, NTime } from 'naive-ui'
+import { InformationCircleOutline } from '@vicons/ionicons5'
+import { DataTableColumn, NButton, NIcon, NTag, NTime, NTooltip } from 'naive-ui'
 export type DataTableColumn2<T> = DataTableColumn<T> & {
     hidden?: boolean
 }
@@ -50,10 +51,32 @@ const _columns: DataTableColumn2<OperationCombined>[] = [
                 [2, '突袭'],
                 [3, '兼容'],
             ])
-            const text = map.get(row.content.difficulty) || '未知'
+            let isAccurate = true
+            let text = map.get(row.content.difficulty) || '未知'
+            let type: 'success' | 'error' | 'warning' | 'info' = difficulty === 3 ? 'success' : 'error'
+            if (row.content.stageName.includes('tough')) {
+                isAccurate = false
+                text = '磨难'
+                type = 'warning'
+            }
+
+            const slots = {
+                trigger: () => (
+                    <NIcon size="16" color="gray" class="align-sub">
+                        <InformationCircleOutline />
+                    </NIcon>
+                ),
+            }
             return (
                 <>
-                    <NTag type={difficulty === 3 ? 'success' : 'error'}> {text}</NTag>
+                    <NTag type={type}>
+                        {text}
+                        {!isAccurate && (
+                            <NTooltip v-slots={slots}>
+                                根据关键词检测，可能不准
+                            </NTooltip>
+                        )}
+                    </NTag>
                 </>
             )
         },
