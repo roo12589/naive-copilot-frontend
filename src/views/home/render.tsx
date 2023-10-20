@@ -76,3 +76,7 @@ export function renderSortIcon(icon: Component) {
         })
     }
 }
+
+export const renderIcon = (icon: Component) => {
+    return <NIcon component={icon} size={16} class='align-sub'></NIcon>
+}

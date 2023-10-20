@@ -171,14 +171,16 @@
                 </template>
                 <n-list>
                     <n-list-item>目前只有查询作业功能能够使用，登录/注册/评论/创建作业/公告暂时不能用</n-list-item>
-
                     <n-list-item v-for="(announcement, index) in announcementList" :key="index">
                         {{ announcement }}
                     </n-list-item>
                 </n-list>
             </n-card>
             <div>
-                <a v-for="link in friendlyLinks" :href="link.url">{{ link.title }}</a>
+                <div v-for="link in friendlyLinks">
+                    <component :is="link.icon"></component>
+                    <a :href="link.href">{{ link.label }}</a>
+                </div>
             </div>
         </n-layout-sider>
     </n-layout>
@@ -329,7 +331,7 @@
 </template>
 
 <script lang="tsx" setup>
-import { ref, reactive, onMounted, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick, h } from 'vue'
 import { OPERATORS } from '@/models/generated/operators'
 import OperationCard from './components/OperationCard.vue'
 import ActionCard from './components/ActionCard.vue'
@@ -346,6 +348,10 @@ import {
     ListSharp,
     FlameOutline,
     HelpCircleOutline,
+    LinkOutline,
+LogoGithub,
+HomeOutline,
+PencilOutline,
 } from '@vicons/ionicons5'
 import { Link } from '@/types'
 import type {
@@ -356,12 +362,12 @@ import type {
 } from '@/models/operation'
 import type { MainCommentInfo } from '@/models/comment'
 import { OrderBy, getOperation, getOperationList } from '@/apis/operation'
-import { DataTableColumn2, columns as _columns } from './constant'
+import { DataTableColumn2, columns as _columns, naiveSvg, qqSvg } from './constant'
 import { copyText, exportJson } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
 import { addComment, useCommentList } from '@/apis/comment'
 import { useArknightsStore } from '@/store/arknights'
-import { RenderArticle, renderLabel, renderSortIcon, renderTagExclude, renderTagInclude } from './render'
+import { RenderArticle, renderIcon, renderLabel, renderSortIcon, renderTagExclude, renderTagInclude } from './render'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 
@@ -508,7 +514,56 @@ async function handleMultipleSearch() {
 
 const loading = ref(true)
 const operations = ref<Operation[]>([])
-const friendlyLinks = ref<Link[]>([])
+
+const friendlyLinks: Link[] = [
+    {
+        icon: renderIcon(naiveSvg),
+        href: 'https://www.naiveui.com/zh-CN/os-theme/components/button',
+        label: 'NaiveUI',
+    },
+    {
+        icon: renderIcon(LogoGithub),
+        href: 'https://github.com/roo12589/naive-copilot-frontend',
+        label: '本仓库',
+    },
+    {
+        icon: renderIcon(HomeOutline),
+        href: 'https://maa.plus',
+        label: 'MAA 官网',
+    },
+    {
+        icon: renderIcon(PencilOutline),
+        href: 'https://github.com/MaaAssistantArknights/maa-copilot-frontend/issues/new/choose',
+        label: '意见与反馈',
+    },
+    {
+        icon: renderIcon(LogoGithub),
+        href: 'https://github.com/MaaAssistantArknights/maa-copilot-frontend',
+        label: '前端 GitHub Repo',
+    },
+    {
+        icon: renderIcon(LogoGithub),
+        href: 'https://github.com/MaaAssistantArknights/MaaBackendCenter',
+        label: '后端 GitHub Repo',
+    },
+    {
+        icon: renderIcon(LogoGithub),
+        href: 'https://github.com/MaaAssistantArknights/MaaAssistantArknights',
+        label: 'MAA GitHub Repo',
+    },
+    {
+        icon: renderIcon(qqSvg),
+        href: 'https://jq.qq.com/?_wv=1027&k=ElimpMzQ',
+        label: '作业制作者交流群：1169188429',
+    },
+    {
+        icon: renderIcon(qqSvg),
+        href: 'https://ota.maa.plus/MaaAssistantArknights/api/qqgroup/index.html',
+        label: '作业分享群',
+    },
+]
+
+
 const announcementList = ref<string[]>([])
 
 const sortOptions = [
@@ -569,11 +624,6 @@ onMounted(async () => {
     tableData.value = operationList
     operations.value = operationList
 
-    friendlyLinks.value = [
-        { url: 'http://', title: '链接1' },
-        { url: 'http://', title: '链接2' },
-        { url: 'http://', title: '链接3' },
-    ]
     if (route.query?.oid) {
         const operation = await getOperation(route.query.oid as string)
         if (operation) {
