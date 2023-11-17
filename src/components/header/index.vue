@@ -5,16 +5,10 @@
                 Naive Copilot&nbsp;
                 <span class="text-xs text-gray-500">Copied</span>
             </a>
+            <n-divider vertical class="!ml-4 !mr-[-1rem]" />
         </template>
         <template #subtitle>
-            <n-divider vertical />
-
-            <n-button quaternary type="primary" size="medium" @click="">
-                <router-link to="/home">首页</router-link>
-            </n-button>
-            <n-button quaternary type="primary" size="medium" @click="">
-                <router-link to="/test">test</router-link>
-            </n-button>
+            <slot name="medium"></slot>
         </template>
 
         <template #extra>

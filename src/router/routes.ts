@@ -21,9 +21,9 @@ export const baseRoutes = [
         component: () => import('@/views/home/index.vue'),
     },
     {
-        path: '/test',
-        name: 'test',
-        component: () => import('@/views/test/index.vue'),
+        path: '/yuhun',
+        name: 'yuhun',
+        component: () => import('@/views/yuhun/index.vue'),
     },
 ]
 // modules文件夹下的路由都会作为动态路由

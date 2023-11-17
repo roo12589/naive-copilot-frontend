@@ -2,6 +2,14 @@
     <AppProvider :theme="theme">
         <!-- <n-button type="primary" size="medium" @click="toggleTheme">toggle</n-button> -->
         <Header>
+            <template #medium>
+                <n-button quaternary type="primary" size="medium" @click="">
+                    <router-link to="/home">首页</router-link>
+                </n-button>
+                <n-button quaternary type="primary" size="medium" @click="">
+                    <router-link to="/yuhun">御魂分析</router-link>
+                </n-button>
+            </template>
             <template #right>
                 <n-icon class="cursor-pointer" size="18" @click="toggleTheme">
                     <SunnyOutline v-if="isLightTheme" />
@@ -9,7 +17,9 @@
                 </n-icon>
             </template>
         </Header>
-        <router-view></router-view>
+        <Suspense>
+            <router-view></router-view>
+        </Suspense>
     </AppProvider>
 </template>
 
