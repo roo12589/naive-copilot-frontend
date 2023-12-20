@@ -8,6 +8,7 @@ export interface PaginatedResponse<T> {
 }
 
 export interface Operation {
+
   id: string | number
   content: string
   uploadTime: string
@@ -23,6 +24,8 @@ export interface Operation {
   commentsCount: number
   like: number
   dislike: number
+  /** 保存原内容 用于下载JSON */
+  originContent: string
 }
 export interface OperationCombined extends Omit<Operation,'content'> {
     content:CopilotDocV1.Operation

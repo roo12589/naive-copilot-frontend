@@ -1,9 +1,37 @@
+import JSZip from 'jszip'
+
 export function exportJson(filename: string, data: string) {
     let blob = new Blob([data]) //  创建 blob 对象
     let link = document.createElement('a')
     link.href = URL.createObjectURL(blob) //  创建一个 URL 对象并传给 a 的 href
-    link.download = filename //  设置下载的默认文件名
+    link.download = filename + '.json' //  设置下载的默认文件名
     link.click()
+}
+interface JSONObj {
+    /** 文件名 */
+    name: string
+    /** JSON内容 */
+    content: string
+}
+export function exportZip(list: JSONObj[], zipName?: string) {
+    const zip = new JSZip()
+    for (const j of list) {
+        zip.file(j.name + '.json', j.content)
+    }
+    // 生成 ZIP 文件
+    zip.generateAsync({ type: 'blob' })
+        .then((content) => {
+            // 创建一个下载链接
+            const downloadLink = document.createElement('a')
+            downloadLink.href = URL.createObjectURL(content)
+            downloadLink.download = zipName || `作业_${new Date().toLocaleString()}_${list.length}条.zip`
+
+            // 触发点击事件以下载 ZIP 文件
+            downloadLink.click()
+        })
+        .catch((error) => {
+            console.error('Failed to generate ZIP file:', error)
+        })
 }
 
 // 复制到剪切板

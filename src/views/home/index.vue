@@ -85,7 +85,7 @@
                     </div>
                 </div>
             </n-card>
-            <n-tabs v-model:value="tab" type="line" size="medium">
+            <n-tabs v-model:value="tab" type="line" size="medium" animated>
                 <n-tab-pane name="single" tab="精确查询">
                     <div>
                         <n-dropdown
@@ -132,6 +132,9 @@
                         />
                     </div>
                 </n-tab-pane>
+                <template #suffix>
+                    <n-button v-if="tab === 'multiple'" type="primary" @click="exportAllJson">打包下载</n-button>
+                </template>
             </n-tabs>
         </n-layout-content>
         <n-layout-sider
@@ -349,9 +352,9 @@ import {
     FlameOutline,
     HelpCircleOutline,
     LinkOutline,
-LogoGithub,
-HomeOutline,
-PencilOutline,
+    LogoGithub,
+    HomeOutline,
+    PencilOutline,
 } from '@vicons/ionicons5'
 import { Link } from '@/types'
 import type {
@@ -363,7 +366,7 @@ import type {
 import type { MainCommentInfo } from '@/models/comment'
 import { OrderBy, getOperation, getOperationList } from '@/apis/operation'
 import { DataTableColumn2, columns as _columns, naiveSvg, qqSvg } from './constant'
-import { copyText, exportJson } from '@/utils'
+import { copyText, exportJson, exportZip } from '@/utils'
 import camelcaseKeys from 'camelcase-keys'
 import { addComment, useCommentList } from '@/apis/comment'
 import { useArknightsStore } from '@/store/arknights'
@@ -512,6 +515,14 @@ async function handleMultipleSearch() {
     tableData.value = result
 }
 
+const exportAllJson = () => {
+    const list: any = []
+    operations.value.forEach((operation) => {
+        list.push({ name: operation.content.doc.title, content: operation.originContent })
+    })
+    exportZip(list)
+}
+
 const loading = ref(true)
 const operations = ref<Operation[]>([])
 
@@ -562,7 +573,6 @@ const friendlyLinks: Link[] = [
         label: '作业分享群',
     },
 ]
-
 
 const announcementList = ref<string[]>([])
 
@@ -651,6 +661,7 @@ async function useOperationList(
     const operationListInfo = (await getOperationList(page, ...args)).data
     const operationList =
         operationListInfo?.data.map((o) => {
+            o.originContent = o.content
             o.content = JSON.parse(o.content)
             return o
         }) || []
